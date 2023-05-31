@@ -1,0 +1,170 @@
+fileFormatVersion: 2
+guid: 209b8ad92757f7c4fac470e38298c261
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: SuomiKP31_Barrel
+    100004: SuomiKP31_Body
+    100006: SuomiKP31_Bolt
+    100008: SuomiKP31_Cap
+    100010: SuomiKP31_Cover
+    100012: SuomiKP31_Drum
+    100014: SuomiKP31_Handle
+    100016: SuomiKP31_Lock
+    100018: SuomiKP31_Magazine
+    100020: SuomiKP31_Magazine_Loop
+    100022: SuomiKP31_MagLock
+    100024: SuomiKP31_Safety
+    100026: SuomiKP31_Sight
+    100028: SuomiKP31_SightAdjust
+    100030: SuomiKP31_Trigger
+    400000: //RootNode
+    400002: SuomiKP31_Barrel
+    400004: SuomiKP31_Body
+    400006: SuomiKP31_Bolt
+    400008: SuomiKP31_Cap
+    400010: SuomiKP31_Cover
+    400012: SuomiKP31_Drum
+    400014: SuomiKP31_Handle
+    400016: SuomiKP31_Lock
+    400018: SuomiKP31_Magazine
+    400020: SuomiKP31_Magazine_Loop
+    400022: SuomiKP31_MagLock
+    400024: SuomiKP31_Safety
+    400026: SuomiKP31_Sight
+    400028: SuomiKP31_SightAdjust
+    400030: SuomiKP31_Trigger
+    2100000: SuomiKP33
+    2100002: SuomiKP34
+    2300000: SuomiKP31_Barrel
+    2300002: SuomiKP31_Body
+    2300004: SuomiKP31_Bolt
+    2300006: SuomiKP31_Cap
+    2300008: SuomiKP31_Cover
+    2300010: SuomiKP31_Drum
+    2300012: SuomiKP31_Handle
+    2300014: SuomiKP31_Lock
+    2300016: SuomiKP31_Magazine
+    2300018: SuomiKP31_Magazine_Loop
+    2300020: SuomiKP31_MagLock
+    2300022: SuomiKP31_Safety
+    2300024: SuomiKP31_Sight
+    2300026: SuomiKP31_SightAdjust
+    2300028: SuomiKP31_Trigger
+    3300000: SuomiKP31_Barrel
+    3300002: SuomiKP31_Body
+    3300004: SuomiKP31_Bolt
+    3300006: SuomiKP31_Cap
+    3300008: SuomiKP31_Cover
+    3300010: SuomiKP31_Drum
+    3300012: SuomiKP31_Handle
+    3300014: SuomiKP31_Lock
+    3300016: SuomiKP31_Magazine
+    3300018: SuomiKP31_Magazine_Loop
+    3300020: SuomiKP31_MagLock
+    3300022: SuomiKP31_Safety
+    3300024: SuomiKP31_Sight
+    3300026: SuomiKP31_SightAdjust
+    3300028: SuomiKP31_Trigger
+    4300000: SuomiKP31_Body
+    4300002: SuomiKP31_Barrel
+    4300004: SuomiKP31_MagLock
+    4300006: SuomiKP31_Safety
+    4300008: SuomiKP31_Trigger
+    4300010: SuomiKP31_Cap
+    4300012: SuomiKP31_Bolt
+    4300014: SuomiKP31_Cover
+    4300016: SuomiKP31_Sight
+    4300018: SuomiKP31_SightAdjust
+    4300020: SuomiKP31_Handle
+    4300022: SuomiKP31_Lock
+    4300024: SuomiKP31_Drum
+    4300026: SuomiKP31_Magazine
+    4300028: SuomiKP31_Magazine_Loop
+  externalObjects: {}
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

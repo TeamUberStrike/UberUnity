@@ -1,0 +1,6 @@
+Assets/Maps/Lost_Paradise_II/Lost_Paradise_2/LightingData.asset filter=lfs diff=lfs merge=lfs -text
+Assets/Maps/Temple_Of_The_Raven/Temple_Of_The_Raven/LightingData.asset filter=lfs diff=lfs merge=lfs -text
+Library/PlayerDataCache/Win64/Data/resources.assets.resS filter=lfs diff=lfs merge=lfs -text
+Library/PlayerDataCache/Win64/Data/sharedassets0.assets.resS filter=lfs diff=lfs merge=lfs -text
+Assets/Maps/Catalyst/Catalyst/LightingData.asset filter=lfs diff=lfs merge=lfs -text
+Assets/Maps/SuperPRISM_Reactor/SuperPRISM_Reactor/LightingData.asset filter=lfs diff=lfs merge=lfs -text

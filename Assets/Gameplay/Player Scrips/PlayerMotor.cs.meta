@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8340854653178ff41b178be618036b5f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - playerCamera: {instanceID: 0}
+  - springPrefab: {fileID: 6725922360278440511, guid: 706da88bb193eea409cdbd8ed479b101,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

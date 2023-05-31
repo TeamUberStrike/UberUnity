@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5319761037171754091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5319761037171754089}
+  - component: {fileID: 5319761037171754088}
+  m_Layer: 0
+  m_Name: Global Resources
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5319761037171754089
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5319761037171754091}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5319761037171754088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5319761037171754091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a69a70a20c32e84592d37b78a2fc0f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weapons: []
+  appereances: []
+  appereancesPrefab: {fileID: 3165512013481172206, guid: 7494e981acbd967449bea2a23d429f19,
+    type: 3}
+  lutzDefaultHatPrefab: {fileID: 3552869370779062519, guid: e74ad6baf40e77e46902b5793b151c41,
+    type: 3}
+  hitmarkEnemy: {fileID: 7563104459376540035, guid: b2734dcce5c544045a16f6c8e2ebfeca,
+    type: 3}
+  bulletTrail: {fileID: 3332158897913486054, guid: 2c7c5c4adebca8a42b004cd95fe0e9a2,
+    type: 3}
+  defaultMuzzle: {fileID: 4300533007854612, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
+    type: 3}
+  enemyRagdoll: {fileID: 8799421090361703161, guid: 3769b09a606dbb84081e3be3b3a03fe6,
+    type: 3}
+  bulletHitSounds:
+  - {fileID: 8300000, guid: 4e817e3992b6682469a7f60d5e4174b3, type: 3}
+  - {fileID: 8300000, guid: ea02d4bdd15bad94d9292be35fbedbb5, type: 3}
+  - {fileID: 8300000, guid: ba7e493277ac03744b1fab778c1bea31, type: 3}
+  - {fileID: 8300000, guid: 4f9f9ac5f327da74ca9be08288637d2e, type: 3}
+  - {fileID: 8300000, guid: aa3e75b7c14a9ac4c83910f65efe7bfa, type: 3}
+  - {fileID: 8300000, guid: 2f457f3e6f511034d930597722b5d56e, type: 3}
+  - {fileID: 8300000, guid: d024a9e2fb802a849a0cf179c178a8c8, type: 3}
+  - {fileID: 8300000, guid: 689218b4352208c4494abd43c165bba3, type: 3}
+  - {fileID: 8300000, guid: 6702f61cea7765848a5c84a96df62c66, type: 3}
+  - {fileID: 8300000, guid: 718ee9fa793043746aeeb3e69cc0c70f, type: 3}
+  - {fileID: 8300000, guid: 80b1c3b0a7b91f042a354fc0f9b4b325, type: 3}
+  - {fileID: 8300000, guid: 1576454b56c09ef499d6a9dc2c758a0f, type: 3}
+  - {fileID: 8300000, guid: 72792b0988a666a47a8c3d175a5276b3, type: 3}
+  - {fileID: 8300000, guid: 1b25956166ede6045b4b812986967f2e, type: 3}
+  - {fileID: 8300000, guid: e5037ac36d4f1d74297e39cfab89db79, type: 3}
+  - {fileID: 8300000, guid: 92eb6d28a14857d44aceeb1377dbb083, type: 3}
+  - {fileID: 8300000, guid: f3e0e0a534410264f8c710ca97100353, type: 3}
+  - {fileID: 8300000, guid: 673753554113b8a4b85b6375318d62f8, type: 3}
+  - {fileID: 8300000, guid: f4cba392a721ddb4285204354325845c, type: 3}
+  - {fileID: 8300000, guid: 7b651b67baec4e84cb989f3fe7e9492b, type: 3}
+  - {fileID: 8300000, guid: 112dbcf0c023ade498cc5ac77d928128, type: 3}
+  - {fileID: 8300000, guid: 9fc9e873f3c8ca24f9215a299f08fdbe, type: 3}
+  - {fileID: 8300000, guid: 652a1d7a92794db45ab4a00c7430627b, type: 3}
+  - {fileID: 8300000, guid: 4e9d6a5c4e7833646b5f197beef961f5, type: 3}
+  - {fileID: 8300000, guid: ac7afd6b18d357e47a2adabe774f482d, type: 3}
+  - {fileID: 8300000, guid: 433f4139b6259d945b0e86c2164220fd, type: 3}
+  - {fileID: 8300000, guid: 3c41f34d716548f46932c4eb021aa79c, type: 3}
+  - {fileID: 8300000, guid: 40b7ceb8d6e6ddc4cadae56d56737494, type: 3}
+  - {fileID: 8300000, guid: 49431c6b05b507245851cf8c8a2d7bf6, type: 3}
+  - {fileID: 8300000, guid: d520dacd725b12c43a08a5fee7681bee, type: 3}
+  - {fileID: 8300000, guid: 52833c6086c48b844ab66f24824bf8f1, type: 3}
+  - {fileID: 8300000, guid: de55917160e7df04192706036e53d246, type: 3}
+  - {fileID: 8300000, guid: fb4968fdbc848394f88bece5a5f66c0a, type: 3}
+  - {fileID: 8300000, guid: 01fb167cd0e261a4f9e7584b6b5741bb, type: 3}
+  - {fileID: 8300000, guid: 1ad658d04679cbe4c8a8d096e933725b, type: 3}
+  - {fileID: 8300000, guid: b076f85e8c462a04c91b707b6914b96d, type: 3}
+  - {fileID: 8300000, guid: 3567b3ccb41208443828f70c1ac533da, type: 3}
+  - {fileID: 8300000, guid: 87faad58d47f971448a28e46d4bdd90c, type: 3}
+  woodBulletEffect: {fileID: 962320584115458322, guid: 2ed9d5c9c722a7945998e4c3fd5c8121,
+    type: 3}
+  stoneBulletEffect: {fileID: 3548854749323406974, guid: ab56397b5a057964290c5cda16ec2f95,
+    type: 3}
+  sandBulletEffect: {fileID: 4136880834071084886, guid: 7a244d3485e017f45b8c68cdd60c5209,
+    type: 3}
+  metalBulletEffect: {fileID: 3559072376533598096, guid: 3adfe469f7e4013448dc987161d523b6,
+    type: 3}
+  shells:
+  - {fileID: 1614807781531315565, guid: d28a2247765a2d947bd220f92040eb40, type: 3}
+  - {fileID: 4132182260000229134, guid: 39c323a0862d953469628f067eae7fe4, type: 3}
+  - {fileID: 888982127417683046, guid: d3832b5eaec7f964ab7961b5081c94ac, type: 3}
+  - {fileID: 2350752491536672194, guid: 3608ed4d51f1c504d829d3a509ef7d1e, type: 3}
+  laitelaNarrator: {fileID: 7376047544962937862, guid: e0e1050ee4ebeac4a97e4db9161a9dbe,
+    type: 3}
+  taalasmaaNarrator: {fileID: 5287873574285446023, guid: 509a3d6148e17934c9ef69e0eff7434a,
+    type: 3}

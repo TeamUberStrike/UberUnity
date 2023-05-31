@@ -1,0 +1,174 @@
+fileFormatVersion: 2
+guid: 9376cc1ae0b36134f8e6a5a7a49e353a
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: LeftPart1_0
+    100004: LeftPart1_resources_assets_2282:LeftPart1_0
+    100006: LeftPart2_0
+    100008: LeftPart2_resources_assets_2296:LeftPart2_0
+    100010: LeftPart3_0
+    100012: LeftPart3_resources_assets_2305:LeftPart3_0
+    100014: LeftPart4_0
+    100016: LeftPart4_resources_assets_2315:LeftPart4_0
+    100018: Part1_resources_assets_2224:Part1_0
+    100020: Part2_resources_assets_2266:Part2_0
+    100022: ShotGun_resources_assets_2044:ShotGun_0
+    100024: TopPart1_resources_assets_2342:TopPart1_0
+    100026: TopPart2_resources_assets_2346:TopPart2_0
+    100028: TopPart3_resources_assets_2349:TopPart3_0
+    100030: TopPart4_resources_assets_2351:TopPart4_0
+    100032: TopPart5_resources_assets_2354:TopPart5_0
+    400000: //RootNode
+    400002: LeftPart1_0
+    400004: LeftPart1_resources_assets_2282:LeftPart1_0
+    400006: LeftPart2_0
+    400008: LeftPart2_resources_assets_2296:LeftPart2_0
+    400010: LeftPart3_0
+    400012: LeftPart3_resources_assets_2305:LeftPart3_0
+    400014: LeftPart4_0
+    400016: LeftPart4_resources_assets_2315:LeftPart4_0
+    400018: Part1_resources_assets_2224:Part1_0
+    400020: Part2_resources_assets_2266:Part2_0
+    400022: ShotGun_resources_assets_2044:ShotGun_0
+    400024: TopPart1_resources_assets_2342:TopPart1_0
+    400026: TopPart2_resources_assets_2346:TopPart2_0
+    400028: TopPart3_resources_assets_2349:TopPart3_0
+    400030: TopPart4_resources_assets_2351:TopPart4_0
+    400032: TopPart5_resources_assets_2354:TopPart5_0
+    2100000: lambert2
+    2300000: LeftPart1_0
+    2300002: LeftPart1_resources_assets_2282:LeftPart1_0
+    2300004: LeftPart2_0
+    2300006: LeftPart2_resources_assets_2296:LeftPart2_0
+    2300008: LeftPart3_0
+    2300010: LeftPart3_resources_assets_2305:LeftPart3_0
+    2300012: LeftPart4_0
+    2300014: LeftPart4_resources_assets_2315:LeftPart4_0
+    2300016: Part1_resources_assets_2224:Part1_0
+    2300018: Part2_resources_assets_2266:Part2_0
+    2300020: ShotGun_resources_assets_2044:ShotGun_0
+    2300022: TopPart1_resources_assets_2342:TopPart1_0
+    2300024: TopPart2_resources_assets_2346:TopPart2_0
+    2300026: TopPart3_resources_assets_2349:TopPart3_0
+    2300028: TopPart4_resources_assets_2351:TopPart4_0
+    2300030: TopPart5_resources_assets_2354:TopPart5_0
+    3300000: LeftPart1_0
+    3300002: LeftPart1_resources_assets_2282:LeftPart1_0
+    3300004: LeftPart2_0
+    3300006: LeftPart2_resources_assets_2296:LeftPart2_0
+    3300008: LeftPart3_0
+    3300010: LeftPart3_resources_assets_2305:LeftPart3_0
+    3300012: LeftPart4_0
+    3300014: LeftPart4_resources_assets_2315:LeftPart4_0
+    3300016: Part1_resources_assets_2224:Part1_0
+    3300018: Part2_resources_assets_2266:Part2_0
+    3300020: ShotGun_resources_assets_2044:ShotGun_0
+    3300022: TopPart1_resources_assets_2342:TopPart1_0
+    3300024: TopPart2_resources_assets_2346:TopPart2_0
+    3300026: TopPart3_resources_assets_2349:TopPart3_0
+    3300028: TopPart4_resources_assets_2351:TopPart4_0
+    3300030: TopPart5_resources_assets_2354:TopPart5_0
+    4300000: ShotGun_resources_assets_2044:ShotGun_0
+    4300002: TopPart1_resources_assets_2342:TopPart1_0
+    4300004: TopPart5_resources_assets_2354:TopPart5_0
+    4300006: TopPart4_resources_assets_2351:TopPart4_0
+    4300008: TopPart3_resources_assets_2349:TopPart3_0
+    4300010: TopPart2_resources_assets_2346:TopPart2_0
+    4300012: Part1_resources_assets_2224:Part1_0
+    4300014: Part2_resources_assets_2266:Part2_0
+    4300016: LeftPart1_resources_assets_2282:LeftPart1_0
+    4300018: LeftPart2_resources_assets_2296:LeftPart2_0
+    4300020: LeftPart3_resources_assets_2305:LeftPart3_0
+    4300022: LeftPart4_resources_assets_2315:LeftPart4_0
+    4300024: LeftPart1_0
+    4300026: LeftPart2_0
+    4300028: LeftPart3_0
+    4300030: LeftPart4_0
+  externalObjects: {}
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,17 @@
+# Mesh "F_JP_ring_effect" exported with Unity Assets Bundle Extractor; 4 vertices, 6 indices, 160 bits per vertex
+g F_JP_ring_effect
+# SubMesh 0
+# Vertices
+v -1.321836 -0.319832 1.292504
+vt 0.000000 0.000000
+v 1.321836 0.002175 -1.331486
+vt 1.000000 1.000000
+v 1.321836 -0.319832 1.292504
+vt 1.000000 0.000000
+v -1.321836 0.002175 -1.331486
+vt 0.000000 1.000000
+# Faces (1 to 4)
+g F_JP_ring_effect_0
+f -2/-2 -3/-3 -4/-4
+f -3/-3 -1/-1 -4/-4
+

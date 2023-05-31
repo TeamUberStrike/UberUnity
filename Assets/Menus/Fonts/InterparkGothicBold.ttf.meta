@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: 81010e340b73963409301dabb62cc61f
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: InterparkGothic
+  fontNames:
+  - InterparkGothic
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 5972e9a4158f52e4fbb30f9d98b0cde6, type: 3}
+  - {fileID: 12800000, guid: 523cb93d08bda304eaa87667d6ffa49f, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
