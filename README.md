@@ -32,3 +32,10 @@ Packet() has as input data, creates a buffer off it, checks it and then calls Pl
 and this triggers the Update function in NetworkPlayer.cs
 
 This partly solves the paragraph above, only question is when and how is Packet called?
+
+Packet is called in Refresh, Refresh is called in Threadstart and thus called all the time
+
+seems like all I need to do is setup a listener (socket?) which is able to receive and send( the receive and send methods are already implemented in the client). I just need to provide a place(server) where the data can be sent to.
+
+
+https://stackoverflow.com/questions/57671443/solved-socket-exception-no-connection-could-be-made-because-the-target-machi

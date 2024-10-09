@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ee27454a6be025449c864ec8738495f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: 84.248.24.9
+  host: 192.168.2.15
   port: 5102
   localPlayerClone: {fileID: 470, guid: 6e5c7ff4ff5a68243a44bb95e8f25993, type: 3}
   playerClone: {fileID: 4126555745750133605, guid: 6b14f4f22cdf12b409e74be5d6dbee9b,
