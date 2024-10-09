@@ -248,7 +248,7 @@ public class Client : TcpEngine
         else
         {
             print("Connected: " + host);
-            SendChatMessage("hello");
+            //SendChatMessage("hello");
             // Start server thread
             thread = new Thread(new ThreadStart(Refresh));
             thread.IsBackground = true;
