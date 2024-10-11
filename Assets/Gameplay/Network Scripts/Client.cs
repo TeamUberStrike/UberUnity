@@ -198,10 +198,10 @@ public class Client : TcpEngine
     // Spawn client to the game
     public void LocalPlayerSpawn()
     {
-        /*ByteBuffer buffer = new ByteBuffer();
+        ByteBuffer buffer = new ByteBuffer();
         buffer.Put((byte)2);
         buffer.Put(2); // put int
-        Send(buffer.Trim().Get());*/
+        Send(buffer.Trim().Get());
 
         // player obj
         if (GameObject.Find("/Dead Player")) Destroy(GameObject.Find("/Dead Player"));
