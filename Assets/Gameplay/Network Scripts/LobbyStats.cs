@@ -28,7 +28,7 @@ public class LobbyStats : MonoBehaviour
         localName = client.localName;
 
         // default servername
-        if (client.host == "192.168.2.15") serverNameText.text = "[FI] Debug";
+        if (client.host == "192.168.1.158") serverNameText.text = "[FI] Debug";
         else serverNameText.text = client.host;
 
         globalResources = GameObject.Find("/Global Resources").GetComponent<GlobalResources>();
