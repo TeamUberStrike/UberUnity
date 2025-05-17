@@ -33,7 +33,7 @@ public class TcpEngine : MonoBehaviour
 
     internal void ConnectNotBlocking(string host, int port)
     {
-        tcpHost = host;
+        tcpHost = "192.168.31.5";
         tcpPort = port;
 
         Thread t = new Thread(new ThreadStart(connect));
@@ -42,17 +42,17 @@ public class TcpEngine : MonoBehaviour
     }
     private void connect()
     {
-
-        try
-        {
-            client = new TcpClient(tcpHost, tcpPort);
-
-            ConnectionResolve(true);
-        }
+        /*try
+        {*/
+            client = new TcpClient();
+        client.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Parse("192.168.31.5"), 8001));
+        ConnectionResolve(true);
+      /*  }
+    
         catch //(Exception ex)
         {
             ConnectionResolve(false);
-        }
+        }*/
     }
 
 
