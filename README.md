@@ -7,6 +7,6 @@ The IP address is hard coded to: 192.168.1.158
 
 You can enter a match and send/receive chat messages using two clients and a server.
 Steps:
-- Start the server,
+- Start the server
 - enter a match by New Game -> select Map -> select Exploration -> start
 - send and receive chat messages
