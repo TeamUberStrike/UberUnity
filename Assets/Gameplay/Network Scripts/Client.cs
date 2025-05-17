@@ -9,8 +9,8 @@ using UnityEngine;
 public class Client : TcpEngine
 {
     // Connection
-    public string host = "";
-    public int port = 5102;
+    public string host = "192.168.1.158";
+    public int port = 8001;
 
     private Transform player;
     internal Transform playerCamera;
@@ -198,10 +198,10 @@ public class Client : TcpEngine
     // Spawn client to the game
     public void LocalPlayerSpawn()
     {
-        /*ByteBuffer buffer = new ByteBuffer();
+        ByteBuffer buffer = new ByteBuffer();
         buffer.Put((byte)2);
         buffer.Put(2); // put int
-        Send(buffer.Trim().Get());*/
+        Send(buffer.Trim().Get());
 
         // player obj
         if (GameObject.Find("/Dead Player")) Destroy(GameObject.Find("/Dead Player"));
@@ -248,7 +248,6 @@ public class Client : TcpEngine
         else
         {
             print("Connected: " + host);
-            SendChatMessage("hello");
             // Start server thread
             thread = new Thread(new ThreadStart(Refresh));
             thread.IsBackground = true;
