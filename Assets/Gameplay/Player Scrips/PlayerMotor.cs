@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerMotor : MonoBehaviour
 {
     private Rigidbody rigidBody;
-    public PhysicMaterial pMaterial;
+    public PhysicsMaterial pMaterial;
     internal Vector3 movement;
     private GameObject hand;
     private PlayerManager playerManager;
@@ -93,7 +93,7 @@ public class PlayerMotor : MonoBehaviour
 
         // Water
         mapHasWater = GameObject.Find("/Environment").GetComponent<Environment>().mapHasWater;
-        rbDrag = rigidBody.drag;
+        rbDrag = rigidBody.linearDamping;
 
         UpdateOptions();
         UpdateQuickItems();
@@ -131,10 +131,10 @@ public class PlayerMotor : MonoBehaviour
     // updates game settings
     public void UpdateOptions()
     {
-        // Motion blur
-        if (PlayerPrefs.HasKey("motion_blur"))
-            if (PlayerPrefs.GetInt("motion_blur") == -1)
-                playerCamera.gameObject.GetComponent<Kino.Motion>().enabled = false;
+        //// Motion blur
+        //if (PlayerPrefs.HasKey("motion_blur"))
+        //    if (PlayerPrefs.GetInt("motion_blur") == -1)
+        //        playerCamera.gameObject.GetComponent<Kino.Motion>().enabled = false;
         
         // Volume
         float v = 0.6f;
@@ -174,8 +174,8 @@ public class PlayerMotor : MonoBehaviour
         {
             swim = rigidBody.position.y < 0;
             rigidBody.useGravity = !swim;
-            if (swim) rigidBody.drag = 1f;
-            else rigidBody.drag = rbDrag;
+            if (swim) rigidBody.linearDamping = 1f;
+            else rigidBody.linearDamping = rbDrag;
 
             // water distortion effect
             if (rigidBody.position.y > -0.8f && rigidBody.position.y < -0.5f)
@@ -218,7 +218,7 @@ public class PlayerMotor : MonoBehaviour
 
         // Player movement
         SetMoveSpeed();
-        if (rigidBody.velocity.magnitude>0.3f|| movement.magnitude > 0.3f) Crouch(false);
+        if (rigidBody.linearVelocity.magnitude>0.3f|| movement.magnitude > 0.3f) Crouch(false);
 
         // If ladder collision
         if (climbing && movement!=Vector3.zero) rigidBody.MovePosition(rigidBody.position + transform.TransformDirection(Vector3.up) * moveSpeed*1.5f * Time.deltaTime);
@@ -231,7 +231,7 @@ public class PlayerMotor : MonoBehaviour
         // Jump speed gain
         if (sideways && distanceToGround > groundLimit 
             && !swim && !climbing && distanceToGround < groundLimit + 2
-            && Mathf.Abs(rigidBody.velocity.z) < 6.6f && Mathf.Abs(rigidBody.velocity.x) < 6.6f)
+            && Mathf.Abs(rigidBody.linearVelocity.z) < 6.6f && Mathf.Abs(rigidBody.linearVelocity.x) < 6.6f)
         
             if(sideways) rigidBody.AddForce(transform.TransformDirection(useTheForce) * moveSpeed * 1.8f,ForceMode.Acceleration);
             //else rigidBody.AddForce(transform.TransformDirection(useTheForce) * moveSpeed * 5f);
@@ -399,7 +399,7 @@ public class PlayerMotor : MonoBehaviour
                 playerManager.UseItem(itemId);
 
                 Rigidbody clone = Instantiate(primaryQuickItem, playerCamera.position + playerCamera.TransformDirection(Vector3.forward), playerCamera.rotation);
-                clone.velocity = playerCamera.TransformDirection(Vector3.forward * (17f + Mathf.Abs(rigidBody.velocity.y)));
+                clone.linearVelocity = playerCamera.TransformDirection(Vector3.forward * (17f + Mathf.Abs(rigidBody.linearVelocity.y)));
             }
         }
         else if (itemId == 1)
@@ -410,7 +410,7 @@ public class PlayerMotor : MonoBehaviour
                 playerManager.UseItem(itemId);
 
                 Rigidbody clone = Instantiate(secondaryQuickItem, playerCamera.position + playerCamera.TransformDirection(Vector3.forward), playerCamera.rotation);
-                clone.velocity = playerCamera.TransformDirection(Vector3.forward * (17f + Mathf.Abs(rigidBody.velocity.y)));
+                clone.linearVelocity = playerCamera.TransformDirection(Vector3.forward * (17f + Mathf.Abs(rigidBody.linearVelocity.y)));
             }
         }
          
@@ -501,7 +501,7 @@ public class PlayerMotor : MonoBehaviour
 
     internal void Crouch(bool crouch)
     {
-        if (climbing || swim || rigidBody.velocity != Vector3.zero) crouch = false;
+        if (climbing || swim || rigidBody.linearVelocity != Vector3.zero) crouch = false;
         if(crouch==crouching) return;
         cameraAnimator.SetBool("down",crouch);
         crouching = crouch;
