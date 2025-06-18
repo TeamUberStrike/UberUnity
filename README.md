@@ -1,5 +1,30 @@
 # Setup
-install Unity version: 2018.3.14f1: there is an option to install visual studio that belongs to it
+
+LightingData related files may change depending on the operating system. It is good practice to tell git to ignore them.
+
+```
+git update-index --skip-worktree Assets/Maps/Danger_Zone/Danger_Zone/LightingData.asset
+git update-index --skip-worktree Assets/Maps/Danger_Zone/Danger_Zone/ReflectionProbe-0.exr
+git update-index --skip-worktree Assets/Maps/Danger_Zone/Danger_Zone/ReflectionProbe-0.exr.meta
+git update-index --skip-worktree Assets/Maps/Monkey_Island/Monkey_Island/LightingData.asset
+git update-index --skip-worktree Assets/Maps/Monkey_Island/Monkey_Island/ReflectionProbe-0.exr
+git update-index --skip-worktree Assets/Maps/Monkey_Island/Monkey_Island/ReflectionProbe-0.exr.meta
+git update-index --skip-worktree Assets/Maps/Research_Hub/Research_Hub/LightingData.asset
+git update-index --skip-worktree Assets/Maps/Research_Hub/Research_Hub/ReflectionProbe-0.exr
+git update-index --skip-worktree Assets/Maps/Research_Hub/Research_Hub/ReflectionProbe-0.exr.meta
+git update-index --skip-worktree Assets/Maps/Space_City/Space_City/LightingData.asset
+git update-index --skip-worktree Assets/Maps/Space_City/Space_City/ReflectionProbe-0.exr
+git update-index --skip-worktree Assets/Maps/Space_City/Space_City/ReflectionProbe-0.exr.meta
+git update-index --skip-worktree Assets/Maps/The_Hangar/The_Hangar/LightingData.asset
+git update-index --skip-worktree Assets/Maps/The_Hangar/The_Hangar/ReflectionProbe-0.exr
+git update-index --skip-worktree Assets/Maps/The_Hangar/The_Hangar/ReflectionProbe-0.exr.meta
+git update-index --skip-worktree Assets/Menus/Intro/LightingData.asset
+git update-index --skip-worktree Assets/Menus/Intro/ReflectionProbe-0.exr
+git update-index --skip-worktree Assets/Menus/Intro/ReflectionProbe-0.exr.meta
+git update-index --skip-worktree Assets/Menus/MainMenu/LightingData.asset
+git update-index --skip-worktree Assets/Menus/MainMenu/ReflectionProbe-0.exr
+git update-index --skip-worktree Assets/Menus/MainMenu/ReflectionProbe-0.exr.meta
+```
 
 # Functionality
 
