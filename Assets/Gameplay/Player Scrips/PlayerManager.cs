@@ -151,7 +151,7 @@ public class PlayerManager : MonoBehaviour
         GameObject death = Instantiate(deathViewPrefab, transform.position, transform.rotation);
         death.SendMessage("SetWeapon", client.localWeaponId);     
         if(dealerPlayerID>0) death.SendMessage("SetKiller", client.GetLatestDatas(dealerPlayerID).playerObject);
-        death.SendMessage("StartVelocity",GetComponent<Rigidbody>().velocity);
+        death.SendMessage("StartVelocity",GetComponent<Rigidbody>().linearVelocity);
 
 
         Destroy(gameObject);

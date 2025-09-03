@@ -32,7 +32,7 @@ public class CannonBullet : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         StartCoroutine(SelfDestruct(8f));
-        if(GameObject.Find("/Player")) playerStartSpeed = GameObject.Find("/Player").GetComponent<Rigidbody>().velocity.y;
+        if(GameObject.Find("/Player")) playerStartSpeed = GameObject.Find("/Player").GetComponent<Rigidbody>().linearVelocity.y;
     }
 
     void FixedUpdate()

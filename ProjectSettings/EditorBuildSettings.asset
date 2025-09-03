@@ -57,3 +57,4 @@ EditorBuildSettings:
     path: Assets/Maps/The_Hangar/The_Hangar.unity
     guid: 4d951c4843244e845983843c4a3122d9
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

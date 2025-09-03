@@ -66,9 +66,9 @@ public class Launcher : Weapon, IWeapon
         }
 
         Transform cam = transform.parent.parent;
-        playerStartSpeed =transform.root.gameObject.GetComponent<Rigidbody>().velocity.y;
+        playerStartSpeed =transform.root.gameObject.GetComponent<Rigidbody>().linearVelocity.y;
         Rigidbody clone = Instantiate(grenade, cam.position+cam.TransformDirection(Vector3.forward), cam.rotation);
-        clone.velocity = cam.TransformDirection(Vector3.forward * (launchSpeed+Mathf.Abs(playerStartSpeed)));
+        clone.linearVelocity = cam.TransformDirection(Vector3.forward * (launchSpeed+Mathf.Abs(playerStartSpeed)));
 
         // Set grenade properties
         LauncherGrenade particle=clone.GetComponent<LauncherGrenade>();
@@ -113,10 +113,10 @@ public class Launcher : Weapon, IWeapon
     {
         yield return new WaitForSeconds(delay);
       
-        if(isLocal) playerStartSpeed = transform.root.gameObject.GetComponent<Rigidbody>().velocity.y; 
+        if(isLocal) playerStartSpeed = transform.root.gameObject.GetComponent<Rigidbody>().linearVelocity.y; 
         Rigidbody cloned = Instantiate(grenade, pos.position, pos.rotation);
-        if(isLocal)cloned.velocity = pos.TransformDirection(Vector3.forward * (launchSpeed + Mathf.Abs(playerStartSpeed)));
-        else cloned.velocity = GetComponentInParent<NetworkPlayer>().raycastPivot.TransformDirection(Vector3.forward * (launchSpeed + Mathf.Abs(playerStartSpeed)));
+        if(isLocal)cloned.linearVelocity = pos.TransformDirection(Vector3.forward * (launchSpeed + Mathf.Abs(playerStartSpeed)));
+        else cloned.linearVelocity = GetComponentInParent<NetworkPlayer>().raycastPivot.TransformDirection(Vector3.forward * (launchSpeed + Mathf.Abs(playerStartSpeed)));
         
 
         // Set grenade properties
@@ -172,9 +172,9 @@ public class Launcher : Weapon, IWeapon
         }
 
         Transform cam = GetComponentInParent<NetworkPlayer>().raycastPivot;
-        playerStartSpeed = transform.root.gameObject.GetComponent<Rigidbody>().velocity.y;
+        playerStartSpeed = transform.root.gameObject.GetComponent<Rigidbody>().linearVelocity.y;
         Rigidbody clone = Instantiate(grenade, optional_muzzle_index.position, cam.rotation);
-        clone.velocity = cam.TransformDirection(Vector3.forward * (launchSpeed + Mathf.Abs(playerStartSpeed)));
+        clone.linearVelocity = cam.TransformDirection(Vector3.forward * (launchSpeed + Mathf.Abs(playerStartSpeed)));
 
         // Set grenade properties
         LauncherGrenade particle = clone.GetComponent<LauncherGrenade>();
