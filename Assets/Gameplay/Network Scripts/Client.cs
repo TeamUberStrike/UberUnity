@@ -608,6 +608,7 @@ public class Client : TcpEngine
     {
         Disconnect();
         gameObject.SetActive(false);
+        isHandshaking = true;
     }
 
     // This is called every frame by every NetworkPlayer
