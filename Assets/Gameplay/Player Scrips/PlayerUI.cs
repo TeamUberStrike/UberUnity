@@ -79,6 +79,29 @@ public class PlayerUI : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "MainMenu") return;
         pauseScreen = GameObject.Find("/MenuSystem/Pause UI").transform.GetChild(0).gameObject;
         statsCanvas = GameObject.Find("/Network Client/Lobby Stats UI");
+                // Minimalistic button creation
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (!canvas)
+        {
+            GameObject canvasObj = new GameObject("Canvas");
+            canvas = canvasObj.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvasObj.AddComponent<CanvasScaler>();
+            canvasObj.AddComponent<GraphicRaycaster>();
+        }
+
+        // Create minimal button
+        GameObject btnObj = new GameObject("MinimalButton");
+        btnObj.transform.SetParent(canvas.transform, false);
+        var btn = btnObj.AddComponent<Button>();
+        var img = btnObj.AddComponent<Image>();
+        img.color = Color.gray;
+
+        var rect = btnObj.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(300, 30);
+        rect.anchoredPosition = Vector2.zero; // Center
+
+        btn.onClick.AddListener(() => Debug.Log("Minimal button clicked"));
     }
 
     public void ToggleStats(bool show)
