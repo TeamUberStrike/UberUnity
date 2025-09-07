@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -68,6 +69,8 @@ public class PlayerUI : MonoBehaviour
 
     public Text killName;
 
+    private Button btn;
+
     // Init
     void Start()
     {
@@ -93,15 +96,37 @@ public class PlayerUI : MonoBehaviour
         // Create minimal button
         GameObject btnObj = new GameObject("MinimalButton");
         btnObj.transform.SetParent(canvas.transform, false);
-        var btn = btnObj.AddComponent<Button>();
+        btn = btnObj.AddComponent<Button>();
         var img = btnObj.AddComponent<Image>();
         img.color = Color.gray;
 
         var rect = btnObj.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(300, 30);
+        rect.sizeDelta = new Vector2(100, 30);
         rect.anchoredPosition = Vector2.zero; // Center
 
-        btn.onClick.AddListener(() => Debug.Log("Minimal button clicked"));
+        btn.onClick.AddListener(OnButtonPressed);
+    }
+    
+    void Update()
+    {
+        // Map 'w' key using the new Input System
+        if (Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
+        {
+            btn.onClick.Invoke();
+        }
+    }
+
+    private void OnButtonPressed()
+    {
+        Debug.Log("Minimal button clicked (or W pressed)");
+        if (playerMotor != null)
+        {
+            // Simulate pressing W (forward)
+            float x = 1f; // Vertical axis (forward)
+            float z = 0f; // Horizontal axis (no strafe)
+            //while (x > 0)
+                playerMotor.Move(x, z);
+        }
     }
 
     public void ToggleStats(bool show)
@@ -115,7 +140,7 @@ public class PlayerUI : MonoBehaviour
             if (!scopeIn)
             {
                 playerCanvas.SetActive(false);
-            }     
+            }
         }
         else
         {
