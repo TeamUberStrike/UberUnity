@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 public class PlayerInput : MonoBehaviour
 {
+    public InputActionAsset actions;
     private PlayerMotor playerMotor;
     private PlayerUI playerUI;
     private PlayerManager playerManager;
+
+    private InputAction jumpAction;
 
     // Init. This method runs before first frame
     private void Start()
@@ -15,6 +19,8 @@ public class PlayerInput : MonoBehaviour
         playerMotor = GetComponent<PlayerMotor>();
         playerUI = GetComponent<PlayerUI>();
         playerManager = GetComponent<PlayerManager>();
+        jumpAction = actions.FindAction("Jump");
+        jumpAction.Enable();
         ToggleCursor(true);
     }
 
@@ -40,7 +46,10 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetButtonUp("Fire1")) { playerMotor.Shoot(false); }
 
         // Get spacebar
-        if (Input.GetButtonDown("Jump")) { playerMotor.Jump(); }
+        if (jumpAction != null && jumpAction.WasPressedThisFrame())
+        {
+            playerMotor.Jump();
+        }
 
         // Get mouse scroll wheel
         float scroll = Input.GetAxis("Mouse ScrollWheel");
