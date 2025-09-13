@@ -96,11 +96,11 @@ public class PlayerUI : MonoBehaviour
         jumpBtnObj.transform.SetParent(canvas.transform, false);
         var jumpBtn = jumpBtnObj.AddComponent<Button>();
         var jumpImg = jumpBtnObj.AddComponent<Image>();
-        jumpImg.color = Color.white;
-
         var jumpRect = jumpBtnObj.GetComponent<RectTransform>();
+        jumpImg.color = Color.white;
         jumpRect.sizeDelta = new Vector2(100, 100);
         jumpRect.anchoredPosition = new Vector2(200, -200); // Place it bottom right
+
 
         // Add OnScreenButton and map to space
         var onScreen = jumpBtnObj.AddComponent<OnScreenButton>();
