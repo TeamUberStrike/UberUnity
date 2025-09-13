@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem.OnScreen;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -90,18 +91,32 @@ public class PlayerUI : MonoBehaviour
             canvasObj.AddComponent<GraphicRaycaster>();
         }
 
-        // Create minimal button
-        GameObject btnObj = new GameObject("MinimalButton");
-        btnObj.transform.SetParent(canvas.transform, false);
-        var btn = btnObj.AddComponent<Button>();
-        var img = btnObj.AddComponent<Image>();
-        img.color = Color.gray;
+        // Create an on-screen jump button
+        GameObject jumpBtnObj = new GameObject("JumpButton");
+        jumpBtnObj.transform.SetParent(canvas.transform, false);
+        var jumpBtn = jumpBtnObj.AddComponent<Button>();
+        var jumpImg = jumpBtnObj.AddComponent<Image>();
+        jumpImg.color = Color.white;
 
-        var rect = btnObj.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(300, 30);
-        rect.anchoredPosition = Vector2.zero; // Center
+        var jumpRect = jumpBtnObj.GetComponent<RectTransform>();
+        jumpRect.sizeDelta = new Vector2(100, 100);
+        jumpRect.anchoredPosition = new Vector2(200, -200); // Place it bottom right
 
-        btn.onClick.AddListener(() => Debug.Log("Minimal button clicked"));
+        // Add OnScreenButton and map to space
+        var onScreen = jumpBtnObj.AddComponent<OnScreenButton>();
+        onScreen.controlPath = "<Keyboard>/space";
+
+        // Optional: Add text
+        GameObject textObj = new GameObject("Text");
+        textObj.transform.SetParent(jumpBtnObj.transform, false);
+        var text = textObj.AddComponent<Text>();
+        text.text = "Jump";
+        text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        text.alignment = TextAnchor.MiddleCenter;
+        text.color = Color.black;
+        var textRect = textObj.GetComponent<RectTransform>();
+        textRect.sizeDelta = jumpRect.sizeDelta;
+        textRect.anchoredPosition = Vector2.zero;
     }
 
     public void ToggleStats(bool show)
