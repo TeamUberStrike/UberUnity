@@ -97,26 +97,14 @@ public class PlayerUI : MonoBehaviour
         var jumpBtn = jumpBtnObj.AddComponent<Button>();
         var jumpImg = jumpBtnObj.AddComponent<Image>();
         var jumpRect = jumpBtnObj.GetComponent<RectTransform>();
-        jumpImg.color = Color.white;
-        jumpRect.sizeDelta = new Vector2(100, 100);
-        jumpRect.anchoredPosition = new Vector2(200, -200); // Place it bottom right
+        jumpImg.color = new Color(0.3f, 0.5f, 1f, 0.25f); // blueish, much more transparent
 
+        jumpRect.sizeDelta = new Vector2(60, 60); // smaller
+        jumpRect.anchoredPosition = new Vector2(200, -80); // move up a bit
 
         // Add OnScreenButton and map to space
         var onScreen = jumpBtnObj.AddComponent<OnScreenButton>();
         onScreen.controlPath = "<Keyboard>/space";
-
-        // Optional: Add text
-        GameObject textObj = new GameObject("Text");
-        textObj.transform.SetParent(jumpBtnObj.transform, false);
-        var text = textObj.AddComponent<Text>();
-        text.text = "Jump";
-        text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        text.alignment = TextAnchor.MiddleCenter;
-        text.color = Color.black;
-        var textRect = textObj.GetComponent<RectTransform>();
-        textRect.sizeDelta = jumpRect.sizeDelta;
-        textRect.anchoredPosition = Vector2.zero;
     }
 
     public void ToggleStats(bool show)
