@@ -13,6 +13,8 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction jumpAction;
 
+    private InputAction moveAction;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -21,6 +23,8 @@ public class PlayerInput : MonoBehaviour
         playerManager = GetComponent<PlayerManager>();
         jumpAction = actions.FindAction("Jump");
         jumpAction.Enable();
+        moveAction = actions["Move"];
+        moveAction.Enable();
         ToggleCursor(true);
     }
 
@@ -28,9 +32,8 @@ public class PlayerInput : MonoBehaviour
     private void Update()
     {
         // Get WASD
-        float x = Input.GetAxis("Vertical");
-        float z = Input.GetAxis("Horizontal");
-        playerMotor.Move(x, z);
+        Vector2 input = moveAction.ReadValue<Vector2>();
+        playerMotor.Move(input.y, input.x);
 
         // Get mouse
         float mouseX = Input.GetAxisRaw("Mouse X");
