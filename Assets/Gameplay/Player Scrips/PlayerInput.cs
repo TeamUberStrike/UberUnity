@@ -88,9 +88,6 @@ public class PlayerInput : MonoBehaviour
         {
             playerMotor.MouseScroll(1);
         }
-        // // Get mouse scroll wheel
-        // float scroll = Input.GetAxis("Mouse ScrollWheel");
-        // playerMotor.MouseScroll(scroll);
 
         // Get Q key
         // This Input is hardcoded. We should make input axis for this later
