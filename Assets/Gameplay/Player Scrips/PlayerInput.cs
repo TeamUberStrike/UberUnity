@@ -21,9 +21,9 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction pauseGameAction;
 
-    private InputAction previousScrollAction;
+    private InputAction previousAction;
 
-    private InputAction nextScrollAction;
+    private InputAction nextAction;
 
     private InputAction mouseScrollAction;
 
@@ -43,10 +43,10 @@ public class PlayerInput : MonoBehaviour
         aimAction.Enable();
         pauseGameAction = actions.FindAction("PauseGame");
         pauseGameAction.Enable();
-        previousScrollAction = actions.FindAction("Previous");
-        previousScrollAction.Enable();
-        nextScrollAction = actions.FindAction("Next");
-        nextScrollAction.Enable();
+        previousAction = actions.FindAction("Previous");
+        previousAction.Enable();
+        nextAction = actions.FindAction("Next");
+        nextAction.Enable();
         mouseScrollAction = actions.FindAction("MouseScroll");
         mouseScrollAction.Enable();
 
@@ -83,12 +83,12 @@ public class PlayerInput : MonoBehaviour
             playerMotor.Jump();
         }
 
-        if (previousScrollAction != null && previousScrollAction.WasPressedThisFrame())
+        if (previousAction != null && previousAction.WasPressedThisFrame())
         {
             playerMotor.MouseScroll(-1);
         }
 
-        if (nextScrollAction != null && nextScrollAction.WasPressedThisFrame())
+        if (nextAction != null && nextAction.WasPressedThisFrame())
         {
             playerMotor.MouseScroll(1);
         }
