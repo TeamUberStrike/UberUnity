@@ -90,26 +90,6 @@ public class PlayerUI : MonoBehaviour
             canvasObj.AddComponent<CanvasScaler>();
             canvasObj.AddComponent<GraphicRaycaster>();
         }
-
-        // Create an on-screen jump button
-        GameObject jumpBtnObj = new GameObject("JumpButton");
-        jumpBtnObj.transform.SetParent(canvas.transform, false);
-        var jumpBtn = jumpBtnObj.AddComponent<Button>();
-        var jumpImg = jumpBtnObj.AddComponent<Image>();
-        var jumpRect = jumpBtnObj.GetComponent<RectTransform>();
-        jumpImg.color = new Color(0.3f, 0.5f, 1f, 0.25f); // blueish, much more transparent
-
-
-        jumpRect.sizeDelta = new Vector2(60, 60); // smaller
-        // Anchor to bottom right for consistent placement
-        jumpRect.anchorMin = new Vector2(1, 0);
-        jumpRect.anchorMax = new Vector2(1, 0);
-        jumpRect.pivot = new Vector2(1, 0);
-        jumpRect.anchoredPosition = new Vector2(-80, 80); // 80px from right and bottom
-
-        // Add OnScreenButton and map to space
-        var onScreen = jumpBtnObj.AddComponent<OnScreenButton>();
-        onScreen.controlPath = "<Keyboard>/space";
     }
 
     public void ToggleStats(bool show)
