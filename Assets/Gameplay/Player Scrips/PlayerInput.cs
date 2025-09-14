@@ -25,6 +25,8 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction nextScrollAction;
 
+    private InputAction mouseScrollAction;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -45,6 +47,8 @@ public class PlayerInput : MonoBehaviour
         previousScrollAction.Enable();
         nextScrollAction = actions.FindAction("Next");
         nextScrollAction.Enable();
+        mouseScrollAction = actions.FindAction("MouseScroll");
+        mouseScrollAction.Enable();
 
         ToggleCursor(true);
     }
@@ -88,6 +92,9 @@ public class PlayerInput : MonoBehaviour
         {
             playerMotor.MouseScroll(1);
         }
+
+        Vector2 scrollDelta = mouseScrollAction.ReadValue<Vector2>();
+        playerMotor.MouseScroll(scrollDelta.y);
 
         // Get Q key
         // This Input is hardcoded. We should make input axis for this later
