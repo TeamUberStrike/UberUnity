@@ -19,6 +19,8 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction aimAction;
 
+    private InputAction pauseGameAction;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -33,6 +35,9 @@ public class PlayerInput : MonoBehaviour
         shootAction.Enable();
         aimAction = actions.FindAction("Aim");
         aimAction.Enable();
+        pauseGameAction = actions.FindAction("PauseGame");
+        pauseGameAction.Enable();
+
         ToggleCursor(true);
     }
 
@@ -84,7 +89,10 @@ public class PlayerInput : MonoBehaviour
 
         // Pause
         // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.Escape)) { playerManager.PauseGame(); }
+        if (jumpAction != null && pauseGameAction.WasPressedThisFrame())
+        {
+            playerManager.PauseGame();
+        }
 
         // Toggle HUD
         // This Input is hardcoded. We should make input axis for this later
