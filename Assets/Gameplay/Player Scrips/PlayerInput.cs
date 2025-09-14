@@ -15,6 +15,8 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction moveAction;
 
+    private InputAction shootAction;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -25,6 +27,8 @@ public class PlayerInput : MonoBehaviour
         jumpAction.Enable();
         moveAction = actions["Move"];
         moveAction.Enable();
+        shootAction = actions.FindAction("Attack");
+        shootAction.Enable();
         ToggleCursor(true);
     }
 
@@ -45,8 +49,10 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetButtonUp("Fire2")) { playerMotor.Aim(false); }
 
         // Get Left mouse button
-        if (Input.GetButtonDown("Fire1")) { playerMotor.Shoot(true); }
-        if (Input.GetButtonUp("Fire1")) { playerMotor.Shoot(false); }
+        if (shootAction != null)
+        {
+            playerMotor.Shoot(shootAction.IsPressed());
+        }
 
         // Get spacebar
         if (jumpAction != null && jumpAction.WasPressedThisFrame())
