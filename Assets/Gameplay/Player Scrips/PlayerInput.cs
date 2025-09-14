@@ -21,6 +21,10 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction pauseGameAction;
 
+    private InputAction previousScrollAction;
+
+    private InputAction nextScrollAction;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -37,6 +41,10 @@ public class PlayerInput : MonoBehaviour
         aimAction.Enable();
         pauseGameAction = actions.FindAction("PauseGame");
         pauseGameAction.Enable();
+        previousScrollAction = actions.FindAction("Previous");
+        previousScrollAction.Enable();
+        nextScrollAction = actions.FindAction("Next");
+        nextScrollAction.Enable();
 
         ToggleCursor(true);
     }
@@ -71,9 +79,18 @@ public class PlayerInput : MonoBehaviour
             playerMotor.Jump();
         }
 
-        // Get mouse scroll wheel
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        playerMotor.MouseScroll(scroll);
+        if (previousScrollAction != null && previousScrollAction.WasPressedThisFrame())
+        {
+            playerMotor.MouseScroll(-1);
+        }
+
+        if (nextScrollAction != null && nextScrollAction.WasPressedThisFrame())
+        {
+            playerMotor.MouseScroll(1);
+        }
+        // // Get mouse scroll wheel
+        // float scroll = Input.GetAxis("Mouse ScrollWheel");
+        // playerMotor.MouseScroll(scroll);
 
         // Get Q key
         // This Input is hardcoded. We should make input axis for this later
