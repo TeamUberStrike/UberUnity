@@ -37,7 +37,7 @@ public class PlayerInput : MonoBehaviour
         jumpAction.Enable();
         moveAction = actions["Move"];
         moveAction.Enable();
-        shootAction = actions.FindAction("Attack");
+        shootAction = actions.FindAction("Shoot");
         shootAction.Enable();
         aimAction = actions.FindAction("Aim");
         aimAction.Enable();
