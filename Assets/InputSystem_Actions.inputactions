@@ -355,7 +355,7 @@
                     "path": "<Mouse>/forwardButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Next",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -454,6 +454,17 @@
                     "path": "<Mouse>/backButton",
                     "interactions": "",
                     "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Previous",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4833068b-c3e4-4244-b4c4-137820a5a8d6",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
                     "groups": "",
                     "action": "Previous",
                     "isComposite": false,
@@ -509,7 +520,7 @@
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Aim",
                     "isComposite": false,
                     "isPartOfComposite": false

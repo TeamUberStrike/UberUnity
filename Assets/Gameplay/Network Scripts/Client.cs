@@ -1,10 +1,12 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using TMPro;
 
 public class Client : TcpEngine
 {
@@ -45,6 +47,8 @@ public class Client : TcpEngine
 
     internal LobbyLog log;
     Transform[] spawnPoints;
+
+    // public TMP_InputField ipInputField; // No longer needed, using PlayerPrefs for IP
 	
     // init
     void Start()
@@ -57,8 +61,12 @@ public class Client : TcpEngine
         log = GameObject.Find("/MenuSystem/Game Log UI/1_log_container").GetComponent<LobbyLog>();
         spawnPoints = GameObject.Find("/Environment/spawns").GetComponentsInChildren<Transform>();
         AssignLocalPlayer(null);
-
-        ConnectNotBlocking(host, port);
+    // GameObject ipObj = GameObject.Find("enter_ip_address2");
+    // ipInputField = ipObj.GetComponent<TMP_InputField>();
+    // ipInputField = UnityEngine.Object.FindObjectOfType<TMP_InputField>();
+    // Debug.Log($"[Client] Start() found input field, value: '{ipInputField.text}'");
+    // host = ipInputField.text;
+    ConnectNotBlocking(host, port);
     }
 
     // play sound when player gets the lead or loses it
