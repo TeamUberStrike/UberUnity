@@ -82,12 +82,6 @@ public class Client : TcpEngine
             
     }
 
-    // Hide / Show stats
-    void ToggleStats(bool show)
-    {
-         statsCanvas.transform.GetChild(0).gameObject.SetActive(show);     
-    }
-
     // Hide / show chat
     void ToggleChat()
     {
@@ -287,10 +281,6 @@ public class Client : TcpEngine
         {
             RunOnMainThread.Dequeue().Invoke();
         }
-
-        // Get TAB key
-        // This Input is hardcoded. We should make input axis for this later
-        ToggleStats(Input.GetKey(KeyCode.Tab));
 
         // Toggle chat
         if (Input.GetKeyDown("return")) { if (log.chatActive) log.ChatEditEnd(); ToggleChat(); }

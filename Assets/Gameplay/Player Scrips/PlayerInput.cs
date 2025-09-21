@@ -27,6 +27,8 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction mouseScrollAction;
 
+    private InputAction statisticsAction;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -49,6 +51,8 @@ public class PlayerInput : MonoBehaviour
         nextAction.Enable();
         mouseScrollAction = actions.FindAction("MouseScroll");
         mouseScrollAction.Enable();
+        statisticsAction = actions.FindAction("Statistics");
+        statisticsAction.Enable();
 
         ToggleCursor(true);
     }
@@ -108,11 +112,14 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(3); }
         if (Input.GetKeyDown(KeyCode.Alpha4)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(2); }
 
-        // Pause
-        // This Input is hardcoded. We should make input axis for this later
         if (jumpAction != null && pauseGameAction.WasPressedThisFrame())
         {
             playerManager.PauseGame();
+        }
+
+        if (playerUI != null)
+        {
+            playerUI.ToggleStats(statisticsAction.IsPressed());
         }
 
         // Toggle HUD
