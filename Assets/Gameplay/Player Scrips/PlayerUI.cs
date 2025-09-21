@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem.OnScreen;
+using UnityEngine.InputSystem;
 
 public class PlayerUI : MonoBehaviour
 {
     GameObject statsCanvas;
+    public GameObject mobileControlsUI;
     public GameObject playerCanvas;
     public GameObject sniperScope;
     public GameObject weaponCamera;
@@ -77,19 +78,12 @@ public class PlayerUI : MonoBehaviour
         playerCamera = transform.GetChild(0).GetComponent<Camera>();
         playerHand = transform.GetChild(0).Find("hand").gameObject.GetComponent<PlayerHand>();
 
+        mobileControlsUI.SetActive(Touchscreen.current != null);
+
+
         if (SceneManager.GetActiveScene().name == "MainMenu") return;
         pauseScreen = GameObject.Find("/MenuSystem/Pause UI").transform.GetChild(0).gameObject;
         statsCanvas = GameObject.Find("/Network Client/Lobby Stats UI");
-                // Minimalistic button creation
-        Canvas canvas = FindObjectOfType<Canvas>();
-        if (!canvas)
-        {
-            GameObject canvasObj = new GameObject("Canvas");
-            canvas = canvasObj.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObj.AddComponent<CanvasScaler>();
-            canvasObj.AddComponent<GraphicRaycaster>();
-        }
     }
 
     public void ToggleStats(bool show)
