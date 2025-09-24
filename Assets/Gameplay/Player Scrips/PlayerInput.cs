@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+
 
 
 public class PlayerInput : MonoBehaviour
 {
+    public RectTransform joystickArea; 
     public InputActionAsset actions;
     private PlayerMotor playerMotor;
     private PlayerUI playerUI;
@@ -60,10 +63,25 @@ public class PlayerInput : MonoBehaviour
         Vector2 input = moveAction.ReadValue<Vector2>();
         playerMotor.Move(input.y, input.x);
 
-        // Get mouse
-        float mouseX = Input.GetAxisRaw("Mouse X");
-        float mouseY = -Input.GetAxisRaw("Mouse Y");
-        playerMotor.MouseLook(mouseX, mouseY);
+        bool touchOnJoystick = false;
+
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            Touch t = Input.GetTouch(i);
+            if (RectTransformUtility.RectangleContainsScreenPoint(joystickArea, t.position))
+            {
+                touchOnJoystick = true;
+                break;
+            }
+        }
+
+        if (!touchOnJoystick)
+        {
+            float mouseX = Input.GetAxisRaw("Mouse X");
+            float mouseY = -Input.GetAxisRaw("Mouse Y");
+            playerMotor.MouseLook(mouseX, mouseY);
+        }
+
 
         // Get right mouse button
         if (aimAction != null)

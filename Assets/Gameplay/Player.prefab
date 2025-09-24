@@ -3493,6 +3493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a7a7a35af5a7824194a236579ff6731, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  joystickArea: {fileID: 3282850917121244204}
   actions: {fileID: -944628639613478452, guid: 02383d4f473378581a91997caf7eb316, type: 3}
 --- !u!114 &1147
 MonoBehaviour:
@@ -12919,6 +12920,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 5961133147827699283}
   m_SourcePrefab: {fileID: 100100000, guid: aaa2c939c0359ac4dbce3f49e8b90252, type: 3}
+--- !u!224 &3282850917121244204 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2929252285020697096, guid: aaa2c939c0359ac4dbce3f49e8b90252,
+    type: 3}
+  m_PrefabInstance: {fileID: 372053753919655460}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3282850917121244205 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2929252285020697097, guid: aaa2c939c0359ac4dbce3f49e8b90252,
