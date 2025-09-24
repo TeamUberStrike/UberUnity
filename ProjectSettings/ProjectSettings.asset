@@ -166,7 +166,7 @@ PlayerSettings:
     Android: com.yoxa.UberStrike
     Standalone: unity.DefaultCompany.FPS2
     Tizen: com.Company.ProductName
-    iPhone: com.Company.ProductName
+    iPhone: com.yoxa.UberStrike
     tvOS: com.Company.ProductName
   buildNumber:
     Standalone: 0
@@ -684,6 +684,9 @@ PlayerSettings:
   - serializedVersion: 3
     m_BuildTarget: Android
     m_Formats: 01000000
+  - serializedVersion: 3
+    m_BuildTarget: iOS
+    m_Formats: 03000000
   playModeTestRunnerEnabled: 0
   runPlayModeTestAsEditModeTest: 0
   actionOnDotNetUnhandledException: 1
