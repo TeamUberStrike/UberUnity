@@ -71,25 +71,9 @@ public class PlayerInput : MonoBehaviour
         Vector2 input = moveAction.ReadValue<Vector2>();
         playerMotor.Move(input.y, input.x);
 
-        bool touchOnJoystick = false;
+        // if not touching UI
+        //playerMotor.MouseLook(mouseX, mouseY);
 
-        for (int i = 0; i < Input.touchCount; i++)
-        {
-            Touch t = Input.GetTouch(i);
-            if (RectTransformUtility.RectangleContainsScreenPoint(joystickArea, t.position))
-            {
-                touchOnJoystick = true;
-                break;
-            }
-        }
-
-        if (!touchOnJoystick)
-        {
-            Vector2 lookInput = lookAction.ReadValue<Vector2>();
-            float mouseX = lookInput.x * 0.1f;
-            float mouseY = -lookInput.y * 0.1f;
-            //playerMotor.MouseLook(mouseX, mouseY);
-        }
 
 
         // Get right mouse button
