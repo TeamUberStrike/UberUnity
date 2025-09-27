@@ -30,6 +30,8 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction mouseScrollAction;
 
+    private InputAction lookAction;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -52,6 +54,8 @@ public class PlayerInput : MonoBehaviour
         nextAction.Enable();
         mouseScrollAction = actions.FindAction("MouseScroll");
         mouseScrollAction.Enable();
+        lookAction = actions.FindAction("Look");
+        lookAction.Enable();
 
         ToggleCursor(true);
     }
@@ -77,8 +81,9 @@ public class PlayerInput : MonoBehaviour
 
         if (!touchOnJoystick)
         {
-            float mouseX = Input.GetAxisRaw("Mouse X");
-            float mouseY = -Input.GetAxisRaw("Mouse Y");
+            Vector2 lookInput = lookAction.ReadValue<Vector2>();
+            float mouseX = lookInput.x * 0.1f;
+            float mouseY = -lookInput.y * 0.1f;
             playerMotor.MouseLook(mouseX, mouseY);
         }
 
