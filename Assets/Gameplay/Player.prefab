@@ -3407,6 +3407,7 @@ GameObject:
   - component: {fileID: 1143}
   - component: {fileID: 775}
   - component: {fileID: 1144}
+  - component: {fileID: 4211196383475510741}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3770,6 +3771,24 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9bea977495acdf7478ab4da580ba71e3, type: 3}
   - {fileID: 8300000, guid: 10b109aa947faa84eaa040ed0ee8226d, type: 3}
   - {fileID: 8300000, guid: 835ca180d5c2b8e4485fcacb175a43c2, type: 3}
+--- !u!114 &4211196383475510741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08baa3d19a3754108af85534c7824251, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TreatMousePointerAsFinger: 1
+  SimulateMouseWithTouches: 0
+  RequireControlKeyForMouseZoom: 1
+  PassThroughObjects: []
+  DefaultDPI: 200
+  LevelUnloadOption: 2
 --- !u!1 &471
 GameObject:
   m_ObjectHideFlags: 0

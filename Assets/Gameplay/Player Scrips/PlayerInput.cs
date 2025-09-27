@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using DigitalRubyShared;
 
 
 
@@ -32,6 +33,8 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction lookAction;
 
+    private PanGestureRecognizer panGesture;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -56,6 +59,7 @@ public class PlayerInput : MonoBehaviour
         mouseScrollAction.Enable();
         lookAction = actions.FindAction("Look");
         lookAction.Enable();
+        CreatePanGesture();
 
         ToggleCursor(true);
     }
@@ -84,7 +88,7 @@ public class PlayerInput : MonoBehaviour
             Vector2 lookInput = lookAction.ReadValue<Vector2>();
             float mouseX = lookInput.x * 0.1f;
             float mouseY = -lookInput.y * 0.1f;
-            playerMotor.MouseLook(mouseX, mouseY);
+            //playerMotor.MouseLook(mouseX, mouseY);
         }
 
 
@@ -149,13 +153,48 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.LeftControl)) { playerMotor.Crouch(false); }
 
     }
+    private void CreatePanGesture()
+    {
+        panGesture = new PanGestureRecognizer();
+        panGesture.MinimumNumberOfTouchesToTrack = 1;
+        panGesture.StateUpdated += PanGestureCallback;
+        FingersScript.Instance.AddGesture(panGesture);
+    }
+
+    private void PanGestureCallback(GestureRecognizer gesture)
+    {
+        if (gesture.State == GestureRecognizerState.Executing)
+        {
+            DebugText("Panned, Location: {0}, {1}, Delta: {2}, {3}", gesture.FocusX, gesture.FocusY, gesture.DeltaX, gesture.DeltaY);
+            float deltaX = Mathf.Clamp(gesture.DeltaX * 0.1f, -20f, 20f);
+            float deltaY = Mathf.Clamp(gesture.DeltaY * 0.1f, -20f, 20f);
+            playerMotor.MouseLook(deltaX, -deltaY);
+            // float deltaX = panGesture.DeltaX / 25.0f;
+            // float deltaY = panGesture.DeltaY / 25.0f;
+            // Vector3 pos = Earth.transform.position;
+            // pos.x += deltaX;
+            // pos.y += deltaY;
+            // Earth.transform.position = pos;
+        }
+        if (gesture.State == GestureRecognizerState.Ended)
+        {
+            playerMotor.MouseLook(0f, 0f);
+            DebugText("Pan ended");
+        }
+    }
+
+    private void DebugText(string text, params object[] format)
+    {
+        //bottomLabel.text = string.Format(text, format);
+        Debug.Log(string.Format(text, format));
+    }
 
     // Hide/show cursor
     public void ToggleCursor(bool hidden)
     {
         Cursor.visible = !hidden;
         if (hidden) Cursor.lockState = CursorLockMode.Locked;
-        else Cursor.lockState = CursorLockMode.None;  
+        else Cursor.lockState = CursorLockMode.None;
     }
 
 }
