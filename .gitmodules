@@ -1,0 +1,3 @@
+[submodule "Assets/LibraryAssets/FingerGestures"]
+	path = Assets/LibraryAssets/FingerGestures
+	url = git@github.com:DigitalRuby/FingersGestures.git
