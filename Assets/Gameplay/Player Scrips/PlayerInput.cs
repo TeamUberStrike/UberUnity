@@ -169,12 +169,6 @@ public class PlayerInput : MonoBehaviour
             float deltaX = Mathf.Clamp(gesture.DeltaX * 0.1f, -20f, 20f);
             float deltaY = Mathf.Clamp(gesture.DeltaY * 0.1f, -20f, 20f);
             playerMotor.MouseLook(deltaX, -deltaY);
-            // float deltaX = panGesture.DeltaX / 25.0f;
-            // float deltaY = panGesture.DeltaY / 25.0f;
-            // Vector3 pos = Earth.transform.position;
-            // pos.x += deltaX;
-            // pos.y += deltaY;
-            // Earth.transform.position = pos;
         }
         if (gesture.State == GestureRecognizerState.Ended)
         {
