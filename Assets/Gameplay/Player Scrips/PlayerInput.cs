@@ -124,7 +124,7 @@ public class PlayerInput : MonoBehaviour
 
         // Pause
         // This Input is hardcoded. We should make input axis for this later
-        if (jumpAction != null && pauseGameAction.WasPressedThisFrame())
+        if (pauseGameAction != null && pauseGameAction.WasPressedThisFrame())
         {
             playerManager.PauseGame();
         }
