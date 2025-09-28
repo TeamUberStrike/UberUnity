@@ -328,6 +328,40 @@ public class PlayerManager : MonoBehaviour
         return 0;
     }
 
+    internal void HandleChatToggle()
+    {
+        if (client != null)
+        {
+            if (client.log.chatActive)
+            {
+                client.log.ChatEditEnd();
+            }
+            client.ToggleChat();
+            
+            // Update PlayerInput chat state
+            PlayerInput playerInput = GetComponent<PlayerInput>();
+            if (playerInput != null)
+            {
+                playerInput.isChatActive = client.log.chatActive;
+            }
+        }
+    }
+
+    internal void HandleChatCancel()
+    {
+        if (client != null && client.log.chatActive) 
+        {
+            client.ToggleChat();
+            
+            // Update PlayerInput chat state
+            PlayerInput playerInput = GetComponent<PlayerInput>();
+            if (playerInput != null)
+            {
+                playerInput.isChatActive = client.log.chatActive;
+            }
+        }
+    }
+
     internal void PauseGame()
     {
         GetComponent<PlayerInput>().enabled = false; // Stop inputs

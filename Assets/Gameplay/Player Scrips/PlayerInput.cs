@@ -11,6 +11,9 @@ public class PlayerInput : MonoBehaviour
 {
     public RectTransform joystickArea; 
     public InputActionAsset actions;
+    
+    internal bool isChatActive = false;
+
     private PlayerMotor playerMotor;
     private PlayerUI playerUI;
     private PlayerManager playerManager;
@@ -67,76 +70,90 @@ public class PlayerInput : MonoBehaviour
     // This method reads player input every frame
     private void Update()
     {
-        // Get WASD
-        Vector2 input = moveAction.ReadValue<Vector2>();
-        playerMotor.Move(input.y, input.x);
-
-        if (Touchscreen.current == null) // pan gesture for touch devices
+        // Chat input handling - always active regardless of chat state
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            Vector2 lookInput = lookAction.ReadValue<Vector2>();
-            float mouseX = lookInput.x * 0.1f;
-            float mouseY = -lookInput.y * 0.1f;
-            playerMotor.MouseLook(mouseX, mouseY);
+            playerManager.HandleChatToggle();
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            playerManager.HandleChatCancel();
         }
 
-        // Get right mouse button
-        if (aimAction != null)
+        // Only process game inputs when chat is NOT active
+        if (!isChatActive)
         {
-            playerMotor.Aim(aimAction.IsPressed());
-        }
+            // Get WASD
+            Vector2 input = moveAction.ReadValue<Vector2>();
+            playerMotor.Move(input.y, input.x);
 
-        // Get Left mouse button
-        if (shootAction != null)
-        {
-            playerMotor.Shoot(shootAction.IsPressed());
-        }
+            if (Touchscreen.current == null) // pan gesture for touch devices
+            {
+                Vector2 lookInput = lookAction.ReadValue<Vector2>();
+                float mouseX = lookInput.x * 0.1f;
+                float mouseY = -lookInput.y * 0.1f;
+                playerMotor.MouseLook(mouseX, mouseY);
+            }
 
-        // Get spacebar
-        if (jumpAction != null && jumpAction.WasPressedThisFrame())
-        {
-            playerMotor.Jump();
-        }
+            // Get right mouse button
+            if (aimAction != null)
+            {
+                playerMotor.Aim(aimAction.IsPressed());
+            }
 
-        if (previousAction != null && previousAction.WasPressedThisFrame())
-        {
-            playerMotor.MouseScroll(-1);
-        }
+            // Get Left mouse button
+            if (shootAction != null)
+            {
+                playerMotor.Shoot(shootAction.IsPressed());
+            }
 
-        if (nextAction != null && nextAction.WasPressedThisFrame())
-        {
-            playerMotor.MouseScroll(1);
-        }
+            // Get spacebar
+            if (jumpAction != null && jumpAction.WasPressedThisFrame())
+            {
+                playerMotor.Jump();
+            }
 
-        Vector2 scrollDelta = mouseScrollAction.ReadValue<Vector2>();
-        playerMotor.MouseScroll(scrollDelta.y);
+            if (previousAction != null && previousAction.WasPressedThisFrame())
+            {
+                playerMotor.MouseScroll(-1);
+            }
 
-        // Get Q key
-        // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.Q)) { playerMotor.UseItem(0); }
-        // Get E key
-        if (Input.GetKeyDown(KeyCode.E)) { playerMotor.UseItem(1); }
+            if (nextAction != null && nextAction.WasPressedThisFrame())
+            {
+                playerMotor.MouseScroll(1);
+            }
 
-        // Weapon switch shorcuts
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(1); }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(4); }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(3); }
-        if (Input.GetKeyDown(KeyCode.Alpha4)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(2); }
+            Vector2 scrollDelta = mouseScrollAction.ReadValue<Vector2>();
+            playerMotor.MouseScroll(scrollDelta.y);
 
-        // Pause
-        if (pauseGameAction != null && pauseGameAction.WasPressedThisFrame())
-        {
-            playerManager.PauseGame();
-        }
+            // Get Q key
+            // This Input is hardcoded. We should make input axis for this later
+            if (Input.GetKeyDown(KeyCode.Q)) { playerMotor.UseItem(0); }
+            // Get E key
+            if (Input.GetKeyDown(KeyCode.E)) { playerMotor.UseItem(1); }
 
-        // Toggle HUD
-        // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.P)) { playerUI.ToggleHUD(); }
+            // Weapon switch shorcuts
+            if (Input.GetKeyDown(KeyCode.Alpha1)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(1); }
+            if (Input.GetKeyDown(KeyCode.Alpha2)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(4); }
+            if (Input.GetKeyDown(KeyCode.Alpha3)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(3); }
+            if (Input.GetKeyDown(KeyCode.Alpha4)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(2); }
 
+            // Pause
+            if (pauseGameAction != null && pauseGameAction.WasPressedThisFrame())
+            {
+                playerManager.PauseGame();
+            }
 
-        // Get ctrl key for crouch
-        // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.LeftControl)) { playerMotor.Crouch(true); }
-        if (Input.GetKeyUp(KeyCode.LeftControl)) { playerMotor.Crouch(false); }
+            // Toggle HUD
+            // This Input is hardcoded. We should make input axis for this later
+            if (Input.GetKeyDown(KeyCode.P)) { playerUI.ToggleHUD(); }
+
+            // Get ctrl key for crouch
+            // This Input is hardcoded. We should make input axis for this later
+            if (Input.GetKeyDown(KeyCode.LeftControl)) { playerMotor.Crouch(true); }
+            if (Input.GetKeyUp(KeyCode.LeftControl)) { playerMotor.Crouch(false); }
+        } // End of !IsChatActive() block
 
     }
     private void CreatePanGesture()

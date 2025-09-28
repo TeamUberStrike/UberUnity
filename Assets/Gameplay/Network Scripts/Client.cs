@@ -89,7 +89,7 @@ public class Client : TcpEngine
     }
 
     // Hide / show chat
-    void ToggleChat()
+    public void ToggleChat()
     {
         if (!log.chatActive)
         {
@@ -98,7 +98,7 @@ public class Client : TcpEngine
             if (GameObject.Find("/Player"))
             {
                 GameObject p = GameObject.Find("/Player");
-                p.GetComponent<PlayerInput>().enabled = false; // Stop inputs
+                // PlayerInput stays enabled for Return/Escape key handling
                 p.GetComponent<PlayerMotor>().Move(0f, 0f); // Stop player
                 p.GetComponent<PlayerMotor>().MouseLook(0f, 0f);
             }
@@ -106,13 +106,7 @@ public class Client : TcpEngine
         else
         {
             log.ToggleChat(false);
-            if (GameObject.Find("/Player")) {
-                if(!GameObject.Find("/Player").GetComponent<PlayerManager>().gamePaused)
-                GameObject.Find("/Player").GetComponent<PlayerInput>().enabled = true;
-                //Cursor.visible = false;
-                //Cursor.lockState = CursorLockMode.Locked;
-            }
-            
+            // No need to re-enable PlayerInput since it's never disabled
         }
     }
 
@@ -292,9 +286,7 @@ public class Client : TcpEngine
         // This Input is hardcoded. We should make input axis for this later
         ToggleStats(Input.GetKey(KeyCode.Tab));
 
-        // Toggle chat
-        if (Input.GetKeyDown("return")) { if (log.chatActive) log.ChatEditEnd(); ToggleChat(); }
-        if (Input.GetKeyDown(KeyCode.Escape)) { if (log.chatActive) ToggleChat();}
+        // Chat input now handled by PlayerManager
     }
 
     public override void Packet(byte[] data)
