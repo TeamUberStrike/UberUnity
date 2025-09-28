@@ -44,14 +44,57 @@ public class LobbyLog : MonoBehaviour
         //else if (friendlyObject == null) obj.GetComponent<Outline>().effectColor = outlineBlack;
     }
 
+    private void Start()
+    {
+        // Hook into InputField events for proper mobile keyboard handling
+        if (field != null)
+        {
+            field.onEndEdit.AddListener(OnChatInputEndEdit);
+        }
+    }
+
+    private void OnChatInputEndEdit(string text)
+    {
+        // Only handle this for mobile platforms - desktop uses PlayerInput Return key handling
+        if (Application.isMobilePlatform && chatActive)
+        {
+            // Find PlayerManager to handle the chat toggle
+            GameObject player = GameObject.Find("/Player");
+            if (player != null)
+            {
+                PlayerManager playerManager = player.GetComponent<PlayerManager>();
+                if (playerManager != null)
+                {
+                    // Check if text was entered (Ready button) or empty (Cancel button)
+                    if (!string.IsNullOrEmpty(text.Trim()))
+                    {
+                        // Ready button pressed with text - send message
+                        ChatEditEnd();
+                        playerManager.ToggleChat();
+                    }
+                    else
+                    {
+                        // Cancel button or empty text - just close chat
+                        field.text = "";
+                        playerManager.ToggleChat();
+                    }
+                }
+            }
+        }
+        // Desktop behavior is handled by PlayerInput Return key detection
+    }
+
     internal void ToggleChat(bool visible)
     {
         chatPanel.SetActive(true);
         chatActive = visible;
 
         field.gameObject.SetActive(visible);
-        field.ActivateInputField();
-        field.Select();
+        if (visible)
+        {
+            field.ActivateInputField();
+            field.Select();
+        }
         scroll.value = 0f;
     }
 
