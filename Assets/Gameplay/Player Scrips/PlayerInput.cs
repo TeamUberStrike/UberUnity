@@ -72,7 +72,10 @@ public class PlayerInput : MonoBehaviour
         playerMotor.Move(input.y, input.x);
 
         // if not touching UI
-        //playerMotor.MouseLook(mouseX, mouseY);
+        Vector2 lookInput = lookAction.ReadValue<Vector2>();
+        float mouseX = lookInput.x * 0.1f;
+        float mouseY = -lookInput.y * 0.1f;
+        playerMotor.MouseLook(mouseX, mouseY);
 
 
 
