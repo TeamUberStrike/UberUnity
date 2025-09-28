@@ -123,7 +123,6 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha4)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(2); }
 
         // Pause
-        // This Input is hardcoded. We should make input axis for this later
         if (pauseGameAction != null && pauseGameAction.WasPressedThisFrame())
         {
             playerManager.PauseGame();
