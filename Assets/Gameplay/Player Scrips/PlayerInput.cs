@@ -36,6 +36,9 @@ public class PlayerInput : MonoBehaviour
 
     private InputAction lookAction;
 
+    private InputAction chatAction;
+    private InputAction cancelChatAction;
+
     private PanGestureRecognizer panGesture;
 
     // Init. This method runs before first frame
@@ -62,6 +65,10 @@ public class PlayerInput : MonoBehaviour
         mouseScrollAction.Enable();
         lookAction = actions.FindAction("Look");
         lookAction.Enable();
+        chatAction = actions.FindAction("Chat");
+        chatAction.Enable();
+        cancelChatAction = actions.FindAction("CancelChat");
+        cancelChatAction.Enable();
         CreatePanGesture();
 
         ToggleCursor(true);
@@ -71,12 +78,12 @@ public class PlayerInput : MonoBehaviour
     private void Update()
     {
         // Chat input handling - always active regardless of chat state
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (chatAction != null && chatAction.WasPressedThisFrame())
         {
             playerManager.HandleChatToggle();
         }
-        
-        if (Input.GetKeyDown(KeyCode.Escape))
+
+        if (cancelChatAction != null && cancelChatAction.WasPressedThisFrame())
         {
             playerManager.HandleChatCancel();
         }
