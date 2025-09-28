@@ -88,27 +88,7 @@ public class Client : TcpEngine
          statsCanvas.transform.GetChild(0).gameObject.SetActive(show);     
     }
 
-    // Hide / show chat
-    public void ToggleChat()
-    {
-        if (!log.chatActive)
-        {
-            log.ToggleChat(true);
 
-            if (GameObject.Find("/Player"))
-            {
-                GameObject p = GameObject.Find("/Player");
-                // PlayerInput stays enabled for Return/Escape key handling
-                p.GetComponent<PlayerMotor>().Move(0f, 0f); // Stop player
-                p.GetComponent<PlayerMotor>().MouseLook(0f, 0f);
-            }
-        }
-        else
-        {
-            log.ToggleChat(false);
-            // No need to re-enable PlayerInput since it's never disabled
-        }
-    }
 
     // Handle player transform when dead/alive
     public void AssignLocalPlayer(Transform newLocalPlayer)
