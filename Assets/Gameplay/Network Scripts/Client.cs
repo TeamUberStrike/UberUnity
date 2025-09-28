@@ -215,6 +215,7 @@ public class Client : TcpEngine
 
     public override void ConnectionResolve(bool success)
     {
+        print("Connecting to " + host + ":" + port + " ...");
         if (success == false)
         {
             Debug.LogWarning("Connection failed: " + host);
