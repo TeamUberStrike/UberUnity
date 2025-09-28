@@ -71,13 +71,13 @@ public class PlayerInput : MonoBehaviour
         Vector2 input = moveAction.ReadValue<Vector2>();
         playerMotor.Move(input.y, input.x);
 
-        // if not touching UI
-        Vector2 lookInput = lookAction.ReadValue<Vector2>();
-        float mouseX = lookInput.x * 0.1f;
-        float mouseY = -lookInput.y * 0.1f;
-        playerMotor.MouseLook(mouseX, mouseY);
-
-
+        if (Touchscreen.current == null) // pan gesture for touch devices
+        {
+            Vector2 lookInput = lookAction.ReadValue<Vector2>();
+            float mouseX = lookInput.x * 0.1f;
+            float mouseY = -lookInput.y * 0.1f;
+            playerMotor.MouseLook(mouseX, mouseY);
+        }
 
         // Get right mouse button
         if (aimAction != null)
