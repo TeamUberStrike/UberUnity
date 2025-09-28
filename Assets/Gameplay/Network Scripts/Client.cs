@@ -265,8 +265,6 @@ public class Client : TcpEngine
         // Get TAB key
         // This Input is hardcoded. We should make input axis for this later
         ToggleStats(Input.GetKey(KeyCode.Tab));
-
-        // Chat input now handled by PlayerManager
     }
 
     public override void Packet(byte[] data)
