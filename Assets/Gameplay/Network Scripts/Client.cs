@@ -9,7 +9,7 @@ using UnityEngine;
 public class Client : TcpEngine
 {
     // Connection
-    public string host = "127.0.0.1";
+    internal string host = "127.0.0.1";
     public int port = 8001;
 
     private Transform player;
