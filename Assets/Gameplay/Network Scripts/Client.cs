@@ -82,12 +82,6 @@ public class Client : TcpEngine
             
     }
 
-    // Hide / Show stats
-    void ToggleStats(bool show)
-    {
-         statsCanvas.transform.GetChild(0).gameObject.SetActive(show);     
-    }
-
 
 
     // Handle player transform when dead/alive
@@ -262,10 +256,6 @@ public class Client : TcpEngine
         {
             RunOnMainThread.Dequeue().Invoke();
         }
-
-        // Get TAB key
-        // This Input is hardcoded. We should make input axis for this later
-        ToggleStats(Input.GetKey(KeyCode.Tab));
     }
 
     public override void Packet(byte[] data)

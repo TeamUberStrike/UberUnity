@@ -41,6 +41,8 @@ public class PlayerInput : MonoBehaviour
 
     private PanGestureRecognizer panGesture;
 
+    private InputAction statisticsAction;
+
     // Init. This method runs before first frame
     private void Start()
     {
@@ -70,6 +72,8 @@ public class PlayerInput : MonoBehaviour
         cancelChatAction = actions.FindAction("CancelChat");
         cancelChatAction.Enable();
         CreatePanGesture();
+        statisticsAction = actions.FindAction("Statistics");
+        statisticsAction.Enable();
 
         ToggleCursor(true);
     }
@@ -150,6 +154,12 @@ public class PlayerInput : MonoBehaviour
             if (pauseGameAction != null && pauseGameAction.WasPressedThisFrame())
             {
                 playerManager.PauseGame();
+            }
+
+
+            if (playerUI != null)
+            {
+                playerUI.ToggleStats(statisticsAction.IsPressed());
             }
 
             // Toggle HUD
