@@ -82,33 +82,7 @@ public class Client : TcpEngine
             
     }
 
-    // Hide / show chat
-    void ToggleChat()
-    {
-        if (!log.chatActive)
-        {
-            log.ToggleChat(true);
 
-            if (GameObject.Find("/Player"))
-            {
-                GameObject p = GameObject.Find("/Player");
-                p.GetComponent<PlayerInput>().enabled = false; // Stop inputs
-                p.GetComponent<PlayerMotor>().Move(0f, 0f); // Stop player
-                p.GetComponent<PlayerMotor>().MouseLook(0f, 0f);
-            }
-        }
-        else
-        {
-            log.ToggleChat(false);
-            if (GameObject.Find("/Player")) {
-                if(!GameObject.Find("/Player").GetComponent<PlayerManager>().gamePaused)
-                GameObject.Find("/Player").GetComponent<PlayerInput>().enabled = true;
-                //Cursor.visible = false;
-                //Cursor.lockState = CursorLockMode.Locked;
-            }
-            
-        }
-    }
 
     // Handle player transform when dead/alive
     public void AssignLocalPlayer(Transform newLocalPlayer)
@@ -235,6 +209,7 @@ public class Client : TcpEngine
 
     public override void ConnectionResolve(bool success)
     {
+        print("Connecting to " + host + ":" + port + " ...");
         if (success == false)
         {
             Debug.LogWarning("Connection failed: " + host);
@@ -281,10 +256,6 @@ public class Client : TcpEngine
         {
             RunOnMainThread.Dequeue().Invoke();
         }
-
-        // Toggle chat
-        if (Input.GetKeyDown("return")) { if (log.chatActive) log.ChatEditEnd(); ToggleChat(); }
-        if (Input.GetKeyDown(KeyCode.Escape)) { if (log.chatActive) ToggleChat();}
     }
 
     public override void Packet(byte[] data)

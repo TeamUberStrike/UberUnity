@@ -23,6 +23,7 @@ public class PlayerManager : MonoBehaviour
     internal bool gamePaused;
 
     PlayerUI playerUI;
+    PlayerInput playerInput;
     PlayerAudio playerAudio;
     PlayerHand playerHand;
     internal Client client;
@@ -38,6 +39,7 @@ public class PlayerManager : MonoBehaviour
         if(!inTheMenus)respawnUI = GameObject.Find("/MenuSystem/Respawn UI").transform.GetChild(0).gameObject;
 
         playerUI = GetComponent<PlayerUI>();
+        playerInput = GetComponent<PlayerInput>();
         playerAudio = GetComponent<PlayerAudio>();
         if ((Resources.Load(PlayerPrefs.GetString("equipped_primary_quickitem"), typeof(GameObject)) as GameObject) != null)
         {
@@ -326,6 +328,43 @@ public class PlayerManager : MonoBehaviour
             return ammo;
         }
         return 0;
+    }
+
+    internal void HandleChatToggle()
+    {
+        if (playerInput.isChatActive)
+        {
+            client.log.ChatEditEnd();
+        }
+        ToggleChat();
+    }
+
+    internal void HandleChatCancel()
+    {
+        if (playerInput.isChatActive)
+        {
+            ToggleChat();
+        }
+    }
+
+    internal void ToggleChat()
+    {
+        if (!playerInput.isChatActive)
+        {
+            // Opening chat
+            client.log.ToggleChat(true);
+            playerInput.isChatActive = true;
+
+            // Stop player movement
+            GetComponent<PlayerMotor>().Move(0f, 0f);
+            GetComponent<PlayerMotor>().MouseLook(0f, 0f);
+        }
+        else
+        {
+            // Closing chat
+            client.log.ToggleChat(false);
+            playerInput.isChatActive = false;
+        }
     }
 
     internal void PauseGame()
