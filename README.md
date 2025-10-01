@@ -24,6 +24,9 @@ git update-index --skip-worktree Assets/Menus/Intro/ReflectionProbe-0.exr.meta
 git update-index --skip-worktree Assets/Menus/MainMenu/LightingData.asset
 git update-index --skip-worktree Assets/Menus/MainMenu/ReflectionProbe-0.exr
 git update-index --skip-worktree Assets/Menus/MainMenu/ReflectionProbe-0.exr.meta
+git update-index --skip-worktree Assets/Menus/Intro/LightingData.asset
+git update-index --skip-worktree Assets/Menus/Intro/ReflectionProbe-0.exr
+git update-index --skip-worktree Assets/Menus/Intro/ReflectionProbe-0.exr.meta
 ```
 
 # Functionality
