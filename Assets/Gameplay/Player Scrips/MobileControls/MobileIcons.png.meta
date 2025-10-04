@@ -193,6 +193,28 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
+      name: TouchScoreboardButton
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 722
+        width: 45
+        height: 45
+      alignment: 9
+      pivot: {x: 0.4999993, y: 0.5000014}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f1b4c1d000000000800000000000000
+      internalID: 21300004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
       name: MobileIcons_0
       rect:
         serializedVersion: 2
@@ -231,6 +253,7 @@ TextureImporter:
       MobileIcons_0: 58199942
       TouchChatButton: 21300000
       TouchMenuButton: 21300002
+      TouchScoreboardButton: 21300004
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
