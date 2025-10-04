@@ -258,6 +258,72 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: TouchFireButton
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 903
+        width: 115
+        height: 114
+      alignment: 9
+      pivot: {x: 0.4999993, y: 0.5000014}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af1b4c1d000000000800000000000000
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TouchJumpButton
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 512
+        width: 78
+        height: 76
+      alignment: 9
+      pivot: {x: 0.4999993, y: 0.5000014}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf1b4c1d000000000800000000000000
+      internalID: 21300010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TouchSecondFireButton
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 512
+        width: 76
+        height: 76
+      alignment: 9
+      pivot: {x: 0.4999993, y: 0.5000014}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df1b4c1d000000000800000000000000
+      internalID: 21300012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -275,8 +341,11 @@ TextureImporter:
       MobileIcons_0: 58199942
       TouchChatButton: 21300000
       TouchCrouchButton: 21300006
+      TouchFireButton: 21300008
+      TouchJumpButton: 21300010
       TouchMenuButton: 21300002
       TouchScoreboardButton: 21300004
+      TouchSecondFireButton: 21300012
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
