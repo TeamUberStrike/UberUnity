@@ -324,6 +324,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: TouchWeaponSniperrifle
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 746
+        width: 155
+        height: 77
+      alignment: 9
+      pivot: {x: 0.4999993, y: 0.5000014}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef1b4c1d000000000800000000000000
+      internalID: 21300014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -346,6 +368,7 @@ TextureImporter:
       TouchMenuButton: 21300002
       TouchScoreboardButton: 21300004
       TouchSecondFireButton: 21300012
+      TouchWeaponSniperrifle: 21300014
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
