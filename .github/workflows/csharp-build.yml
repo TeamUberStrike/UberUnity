@@ -1,0 +1,22 @@
+name: Unity C# Compile Only
+
+on: [push, pull_request]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:8.0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore .NET packages
+        run: |
+          find . -name "*.csproj" -exec dotnet restore {} \;
+
+      - name: Build C# scripts
+        run: |
+          find . -name "*.csproj" -exec dotnet build {} --configuration Release --no-restore \;
