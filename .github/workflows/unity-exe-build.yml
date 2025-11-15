@@ -1,0 +1,36 @@
+name: Unity Windows Build EXE
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Detect Unity version
+        id: unityVersion
+        run: |
+          $version = (Select-String -Path "ProjectSettings/ProjectVersion.txt" -Pattern "m_EditorVersion").Line.Split()[1]
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Install Unity ${{ env.VERSION }}
+        uses: game-ci/unity-installer@v3
+        with:
+          unityVersion: ${{ env.VERSION }}
+          modules: windows-il2cpp
+
+      - name: Build Windows Player
+        run: |
+          "C:\Program Files\Unity\Hub\Editor\${{ env.VERSION }}\Editor\Unity.exe" `
+            -quit -batchmode -nographics `
+            -projectPath . `
+            -buildWindows64Player Build/Windows/UberStrike.exe
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WindowsBuild
+          path: Build
