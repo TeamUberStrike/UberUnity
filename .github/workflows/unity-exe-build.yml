@@ -1,6 +1,6 @@
 name: Unity Windows Build EXE
 
-on: [push, pull_request]
+on: push
 
 jobs:
   build:
@@ -16,21 +16,20 @@ jobs:
           $version = (Select-String -Path "ProjectSettings/ProjectVersion.txt" -Pattern "m_EditorVersion").Line.Split()[1]
           echo "VERSION=$version" >> $env:GITHUB_ENV
 
-      - name: Install Unity ${{ env.VERSION }}
-        uses: game-ci/unity-installer@v3
+      - name: Build Windows 64-bit Player
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
+          targetPlatform: StandaloneWindows64
           unityVersion: ${{ env.VERSION }}
-          modules: windows-il2cpp
-
-      - name: Build Windows Player
-        run: |
-          "C:\Program Files\Unity\Hub\Editor\${{ env.VERSION }}\Editor\Unity.exe" `
-            -quit -batchmode -nographics `
-            -projectPath . `
-            -buildWindows64Player Build/Windows/UberStrike.exe
+          buildName: UberStrike.exe
+          buildPath: Build
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: WindowsBuild
-          path: Build
+          path: Build/StandaloneWindows64
