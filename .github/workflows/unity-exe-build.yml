@@ -1,11 +1,11 @@
 name: Unity Windows Build EXE
 
 on:
-  pull_request:
-    types: [ready_for_review]
+  pull_request
 
 jobs:
   build:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
 
     steps:
@@ -14,12 +14,10 @@ jobs:
 
       - uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/unity3d
-            ~/.local/share/unity3d
-          key: Library-${{ runner.os }}-${{ hashFiles('**/ProjectSettings/ProjectVersion.txt') }}
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
-            Library-${{ runner.os }}-
+            Library-
 
       - name: Build Windows Player
         uses: game-ci/unity-builder@v4
