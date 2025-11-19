@@ -12,12 +12,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: actions/cache@v4
+      - name: Cache
+        uses: actions/cache@v4
         with:
-          path: Library
+          path: |
+            Library
+            Logs
+            obj
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
+
+      - name: Check disk space before cleanup
+        run: df -h
+
+      - name: Free space on runner
+        run: |
+          sudo docker system prune -a -f
+          sudo docker volume prune -f
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/local/share/boost
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Check disk space after cleanup
+        run: df -h
 
       - name: Build Windows Player
         uses: game-ci/unity-builder@v4
@@ -28,7 +49,8 @@ jobs:
         with:
           targetPlatform: StandaloneWindows64
           buildName: UberStrike
-          buildPath: Build
+          buildsPath: Build
+          customParameters: -quit -batchmode -nographics
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
