@@ -33,7 +33,6 @@ jobs:
           targetPlatform: StandaloneWindows64
           buildName: UberStrike
           buildsPath: Build
-          customParameters: -nographics
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
