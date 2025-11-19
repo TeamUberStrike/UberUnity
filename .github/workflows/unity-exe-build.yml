@@ -23,14 +23,6 @@ jobs:
           restore-keys: |
             Library-
 
-      - name: Free space on runner
-        run: |
-          df -h
-          sudo rm -rf /tmp/*
-          sudo apt-get clean
-          sudo rm -rf /var/lib/apt/lists/*
-          df -h
-
       - name: Build Windows Player
         uses: game-ci/unity-builder@v4
         env:
