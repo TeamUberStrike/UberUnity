@@ -1,13 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using DigitalRubyShared;
+
 
 
 public class PlayerInput : MonoBehaviour
 {
+    public RectTransform joystickArea; 
+    public InputActionAsset actions;
+    
+    internal bool isChatActive = false;
+
     private PlayerMotor playerMotor;
     private PlayerUI playerUI;
     private PlayerManager playerManager;
+
+    private InputAction jumpAction;
+
+    private InputAction moveAction;
+
+    private InputAction shootAction;
+
+    private InputAction aimAction;
+
+    private InputAction pauseGameAction;
+
+    private InputAction previousAction;
+
+    private InputAction nextAction;
+
+    private InputAction mouseScrollAction;
+
+    private InputAction lookAction;
+
+    private InputAction chatAction;
+    private InputAction cancelChatAction;
+
+    private PanGestureRecognizer panGesture;
+
+    private InputAction statisticsAction;
 
     // Init. This method runs before first frame
     private void Start()
@@ -15,63 +49,158 @@ public class PlayerInput : MonoBehaviour
         playerMotor = GetComponent<PlayerMotor>();
         playerUI = GetComponent<PlayerUI>();
         playerManager = GetComponent<PlayerManager>();
+        jumpAction = actions.FindAction("Jump");
+        jumpAction.Enable();
+        moveAction = actions["Move"];
+        moveAction.Enable();
+        shootAction = actions.FindAction("Shoot");
+        shootAction.Enable();
+        aimAction = actions.FindAction("Aim");
+        aimAction.Enable();
+        pauseGameAction = actions.FindAction("PauseGame");
+        pauseGameAction.Enable();
+        previousAction = actions.FindAction("Previous");
+        previousAction.Enable();
+        nextAction = actions.FindAction("Next");
+        nextAction.Enable();
+        mouseScrollAction = actions.FindAction("MouseScroll");
+        mouseScrollAction.Enable();
+        lookAction = actions.FindAction("Look");
+        lookAction.Enable();
+        chatAction = actions.FindAction("Chat");
+        chatAction.Enable();
+        cancelChatAction = actions.FindAction("CancelChat");
+        cancelChatAction.Enable();
+        CreatePanGesture();
+        statisticsAction = actions.FindAction("Statistics");
+        statisticsAction.Enable();
+
         ToggleCursor(true);
     }
 
     // This method reads player input every frame
     private void Update()
     {
-        // Get WASD
-        float x = Input.GetAxis("Vertical");
-        float z = Input.GetAxis("Horizontal");
-        playerMotor.Move(x, z);
+        // Chat input handling - always active regardless of chat state
+        if (chatAction != null && chatAction.WasPressedThisFrame())
+        {
+            playerManager.HandleChatToggle();
+        }
 
-        // Get mouse
-        float mouseX = Input.GetAxisRaw("Mouse X");
-        float mouseY = -Input.GetAxisRaw("Mouse Y");
-        playerMotor.MouseLook(mouseX, mouseY);
+        if (cancelChatAction != null && cancelChatAction.WasPressedThisFrame())
+        {
+            playerManager.HandleChatCancel();
+        }
 
-        // Get right mouse button
-        if (Input.GetButtonDown("Fire2")) { playerMotor.Aim(true); }
-        if (Input.GetButtonUp("Fire2")) { playerMotor.Aim(false); }
+        // Only process game inputs when chat is NOT active
+        if (!isChatActive)
+        {
+            // Get WASD
+            Vector2 input = moveAction.ReadValue<Vector2>();
+            playerMotor.Move(input.y, input.x);
 
-        // Get Left mouse button
-        if (Input.GetButtonDown("Fire1")) { playerMotor.Shoot(true); }
-        if (Input.GetButtonUp("Fire1")) { playerMotor.Shoot(false); }
+            if (Touchscreen.current == null) // pan gesture for touch devices
+            {
+                Vector2 lookInput = lookAction.ReadValue<Vector2>();
+                float mouseX = lookInput.x * 0.1f;
+                float mouseY = -lookInput.y * 0.1f;
+                playerMotor.MouseLook(mouseX, mouseY);
+            }
 
-        // Get spacebar
-        if (Input.GetButtonDown("Jump")) { playerMotor.Jump(); }
+            // Get right mouse button
+            if (aimAction != null)
+            {
+                playerMotor.Aim(aimAction.IsPressed());
+            }
 
-        // Get mouse scroll wheel
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        playerMotor.MouseScroll(scroll);
+            // Get Left mouse button
+            if (shootAction != null)
+            {
+                playerMotor.Shoot(shootAction.IsPressed());
+            }
 
-        // Get Q key
-        // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.Q)) { playerMotor.UseItem(0); }
-        // Get E key
-        if (Input.GetKeyDown(KeyCode.E)) { playerMotor.UseItem(1); }
+            // Get spacebar
+            if (jumpAction != null && jumpAction.WasPressedThisFrame())
+            {
+                playerMotor.Jump();
+            }
 
-        // Weapon switch shorcuts
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(1); }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(4); }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(3); }
-        if (Input.GetKeyDown(KeyCode.Alpha4)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(2); }
+            if (previousAction != null && previousAction.WasPressedThisFrame())
+            {
+                playerMotor.MouseScroll(-1);
+            }
 
-        // Pause
-        // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.Escape)) { playerManager.PauseGame(); }
+            if (nextAction != null && nextAction.WasPressedThisFrame())
+            {
+                playerMotor.MouseScroll(1);
+            }
 
-        // Toggle HUD
-        // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.P)) { playerUI.ToggleHUD(); }
+            Vector2 scrollDelta = mouseScrollAction.ReadValue<Vector2>();
+            playerMotor.MouseScroll(scrollDelta.y);
+
+            // Get Q key
+            // This Input is hardcoded. We should make input axis for this later
+            if (Input.GetKeyDown(KeyCode.Q)) { playerMotor.UseItem(0); }
+            // Get E key
+            if (Input.GetKeyDown(KeyCode.E)) { playerMotor.UseItem(1); }
+
+            // Weapon switch shorcuts
+            if (Input.GetKeyDown(KeyCode.Alpha1)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(1); }
+            if (Input.GetKeyDown(KeyCode.Alpha2)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(4); }
+            if (Input.GetKeyDown(KeyCode.Alpha3)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(3); }
+            if (Input.GetKeyDown(KeyCode.Alpha4)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(2); }
+
+            // Pause
+            if (pauseGameAction != null && pauseGameAction.WasPressedThisFrame())
+            {
+                playerManager.PauseGame();
+            }
 
 
-        // Get ctrl key for crouch
-        // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.LeftControl)) { playerMotor.Crouch(true); }
-        if (Input.GetKeyUp(KeyCode.LeftControl)) { playerMotor.Crouch(false); }
+            if (playerUI != null)
+            {
+                playerUI.ToggleStats(statisticsAction.IsPressed());
+            }
 
+            // Toggle HUD
+            // This Input is hardcoded. We should make input axis for this later
+            if (Input.GetKeyDown(KeyCode.P)) { playerUI.ToggleHUD(); }
+
+            // Get ctrl key for crouch
+            // This Input is hardcoded. We should make input axis for this later
+            if (Input.GetKeyDown(KeyCode.LeftControl)) { playerMotor.Crouch(true); }
+            if (Input.GetKeyUp(KeyCode.LeftControl)) { playerMotor.Crouch(false); }
+        } // End of !IsChatActive() block
+
+    }
+    private void CreatePanGesture()
+    {
+        panGesture = new PanGestureRecognizer();
+        panGesture.MinimumNumberOfTouchesToTrack = 1;
+        panGesture.StateUpdated += PanGestureCallback;
+        FingersScript.Instance.AddGesture(panGesture);
+    }
+
+    private void PanGestureCallback(GestureRecognizer gesture)
+    {
+        if (gesture.State == GestureRecognizerState.Executing)
+        {
+            DebugText("Panned, Location: {0}, {1}, Delta: {2}, {3}", gesture.FocusX, gesture.FocusY, gesture.DeltaX, gesture.DeltaY);
+            float deltaX = Mathf.Clamp(gesture.DeltaX * 0.1f, -20f, 20f);
+            float deltaY = Mathf.Clamp(gesture.DeltaY * 0.1f, -20f, 20f);
+            playerMotor.MouseLook(deltaX, -deltaY);
+        }
+        if (gesture.State == GestureRecognizerState.Ended)
+        {
+            playerMotor.MouseLook(0f, 0f);
+            DebugText("Pan ended");
+        }
+    }
+
+    private void DebugText(string text, params object[] format)
+    {
+        //bottomLabel.text = string.Format(text, format);
+        Debug.Log(string.Format(text, format));
     }
 
     // Hide/show cursor
@@ -79,7 +208,7 @@ public class PlayerInput : MonoBehaviour
     {
         Cursor.visible = !hidden;
         if (hidden) Cursor.lockState = CursorLockMode.Locked;
-        else Cursor.lockState = CursorLockMode.None;  
+        else Cursor.lockState = CursorLockMode.None;
     }
 
 }

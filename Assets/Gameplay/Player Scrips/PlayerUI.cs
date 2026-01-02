@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PlayerUI : MonoBehaviour
 {
     GameObject statsCanvas;
+    public GameObject mobileControlsUI;
     public GameObject playerCanvas;
     public GameObject sniperScope;
     public GameObject weaponCamera;
@@ -75,6 +77,9 @@ public class PlayerUI : MonoBehaviour
         playerAudio = GetComponent<PlayerAudio>();
         playerCamera = transform.GetChild(0).GetComponent<Camera>();
         playerHand = transform.GetChild(0).Find("hand").gameObject.GetComponent<PlayerHand>();
+
+        mobileControlsUI.SetActive(Touchscreen.current != null);
+
 
         if (SceneManager.GetActiveScene().name == "MainMenu") return;
         pauseScreen = GameObject.Find("/MenuSystem/Pause UI").transform.GetChild(0).gameObject;
