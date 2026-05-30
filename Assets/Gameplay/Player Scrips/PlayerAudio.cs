@@ -49,7 +49,10 @@ public class PlayerAudio : MonoBehaviour
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(narrator[0], volume);
+        if (narrator != null && narrator.Length > 0 && narrator[0] != null)
+        {
+            audioSource.PlayOneShot(narrator[0], volume);
+        }
 
         // build footStep map
         foreach(AudioClip a in footSteps)
@@ -58,13 +61,18 @@ public class PlayerAudio : MonoBehaviour
         }
 
         // Custom narrator
-        if (GameObject.Find("/Custom Narrator")) Destroy(GameObject.Find("/Custom Narrator"));
+        GameObject customNarrator = GameObject.Find("/Custom Narrator");
+        if (customNarrator != null) Destroy(customNarrator);
         if (PlayerPrefs.HasKey("equipped_head"))
         {
+            GameObject globalResourcesObject = GameObject.Find("/Global Resources");
+            GlobalResources globalResources = globalResourcesObject != null ? globalResourcesObject.GetComponent<GlobalResources>() : null;
+            if (globalResources == null) return;
+
             //laitela
             if (PlayerPrefs.GetString("equipped_head") == "Paperbag laitela")
             {                
-                CustomNarrator c=Instantiate(GameObject.Find("/Global Resources").GetComponent<GlobalResources>().laitelaNarrator);
+                CustomNarrator c = Instantiate(globalResources.laitelaNarrator);
                 c.gameObject.name = "Custom Narrator";
                 
             }
@@ -72,7 +80,7 @@ public class PlayerAudio : MonoBehaviour
             //taalasmaa
             if (PlayerPrefs.GetString("equipped_head") == "Paperbag taalasmaa")
             {
-                CustomNarrator c = Instantiate(GameObject.Find("/Global Resources").GetComponent<GlobalResources>().taalasmaaNarrator);
+                CustomNarrator c = Instantiate(globalResources.taalasmaaNarrator);
                 c.gameObject.name = "Custom Narrator";
 
             }
@@ -82,7 +90,7 @@ public class PlayerAudio : MonoBehaviour
     // Call this to play sounds elsewhere
     public void Play(AudioClip clip)
     {
-        if(audioSource.enabled)
+        if(audioSource != null && audioSource.enabled && clip != null)
         audioSource.PlayOneShot(clip, volume);
     }
 
@@ -110,37 +118,45 @@ public class PlayerAudio : MonoBehaviour
         string foundType = "rock"; // default is rock
 
         // find type
-        foreach (string s in gTypes) if (groundMaterial.Contains(s)) { foundType = s; break; }
+        if (!string.IsNullOrEmpty(groundMaterial))
+            foreach (string s in gTypes) if (groundMaterial.Contains(s)) { foundType = s; break; }
 
         // get clip count
         int i = 1;
         while (steps.Contains(foundType + i)) i++;
         i--;
 
-        int randomIndex = Random.Range(1, i);
-        if (steps.Contains(foundType + randomIndex)) Play((AudioClip)steps[foundType + randomIndex]);
+        if (i <= 0) return;
+
+        int randomIndex = Random.Range(1, i + 1);
+        AudioClip clip = steps[foundType + randomIndex] as AudioClip;
+        if (clip != null) Play(clip);
         else Debug.LogWarning("footstep sound index out of bounds");
     }
 
     // footsteps landing
     public void PlayLanding(string groundMaterial)
     {
-        if (audioSource.isPlaying) return;
+        if (audioSource == null || audioSource.isPlaying) return;
         if (canWalk != null) StopCoroutine(canWalk);
         canWalk = StartCoroutine(CanWalk());
 
         string foundType = "rock"; // default is rock
 
         // find type
-        foreach (string s in gTypes) if (groundMaterial.Contains(s)) { foundType = s; break; }
+        if (!string.IsNullOrEmpty(groundMaterial))
+            foreach (string s in gTypes) if (groundMaterial.Contains(s)) { foundType = s; break; }
 
         // get clip count
         int i = 1;
         while(steps.Contains(foundType + i)) i++;
         i--;
 
-        int randomIndex = Random.Range(1,i); 
-        if (steps.Contains(foundType+randomIndex)) Play((AudioClip)steps[foundType + randomIndex]);
+        if (i <= 0) return;
+
+        int randomIndex = Random.Range(1, i + 1);
+        AudioClip clip = steps[foundType + randomIndex] as AudioClip;
+        if (clip != null) Play(clip);
         else Debug.LogWarning("footstep sound index out of bounds");
     }
 

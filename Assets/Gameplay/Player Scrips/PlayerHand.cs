@@ -26,11 +26,16 @@ public class PlayerHand : MonoBehaviour
     // Init 
     void Start()
     {
-        try {
-            networkClient = GameObject.Find("/Network Client");
-            globalResources = GameObject.Find("/Global Resources").GetComponent<GlobalResources>();
+        networkClient = GameObject.Find("/Network Client");
+        GameObject globalResourcesObject = GameObject.Find("/Global Resources");
+        if (globalResourcesObject != null)
+        {
+            globalResources = globalResourcesObject.GetComponent<GlobalResources>();
         }
-        catch{Debug.LogWarning("Playerhand did not find network objects");}
+        if (networkClient == null || globalResources == null)
+        {
+            Debug.LogWarning("PlayerHand did not find one or more network objects.");
+        }
 
 
         // Get weapons

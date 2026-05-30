@@ -86,7 +86,11 @@ public class LobbyLog : MonoBehaviour
 
     public void ChatEditEnd()
     {
-        if(field.text.Length>0&& field.text.Length < 101) GameObject.Find("/Network Client").SendMessage("SendChatMessage", field.text);
+        if (field.text.Length > 0 && field.text.Length < 101)
+        {
+            GameObject networkClient = GameObject.Find("/Network Client");
+            if (networkClient != null) networkClient.SendMessage("SendChatMessage", field.text);
+        }
         field.text = "";       
         scroll.value = 0f;
     }

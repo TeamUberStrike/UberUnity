@@ -1,0 +1,200 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: LostParadise2-TwinPeaks_Diffuse
+  m_Shader: {fileID: 200, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: []
+  m_CustomRenderQueue: -1
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _Control
+        second:
+          m_Texture: {fileID: 2800000, guid: 675c3f9944a9b2c4d9001ed561d191bb, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Splat0
+        second:
+          m_Texture: {fileID: 2800000, guid: 6545b8705ba8d26458b1614843946287, type: 3}
+          m_Scale: {x: 25, y: 25}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Splat1
+        second:
+          m_Texture: {fileID: 2800000, guid: 7890a25a0858eaf4f8862ff962b0bd0f, type: 3}
+          m_Scale: {x: 30, y: 30}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Splat2
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 15, y: 15}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Splat3
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _Bump1Speed
+        second: 0
+      data:
+        first:
+          name: _Bump2Speed
+        second: 0
+      data:
+        first:
+          name: _Cutoff
+        second: 0.5
+      data:
+        first:
+          name: _DistortionPower
+        second: 0
+      data:
+        first:
+          name: _DistortionSpeed
+        second: 0
+      data:
+        first:
+          name: _EmissionLM
+        second: 0
+      data:
+        first:
+          name: _Exposure
+        second: 1
+      data:
+        first:
+          name: _FresnelScale
+        second: 0.75
+      data:
+        first:
+          name: _GerstnerIntensity
+        second: 1
+      data:
+        first:
+          name: _Gloss
+        second: 0.3
+      data:
+        first:
+          name: _InvFade
+        second: 1
+      data:
+        first:
+          name: _MainTexSpeed
+        second: 0
+      data:
+        first:
+          name: _Opacity
+        second: 0
+      data:
+        first:
+          name: _ReflectPower
+        second: 0
+      data:
+        first:
+          name: _Shininess
+        second: 0.7
+      data:
+        first:
+          name: _Specular
+        second: 1
+      data:
+        first:
+          name: _Texture2Speed
+        second: 0
+    m_Colors:
+      data:
+        first:
+          name: _AnimationDirection
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _AnimationTiling
+        second: {r: 2.2, g: 2.2, b: -1.1, a: -1.1}
+      data:
+        first:
+          name: _BaseColor
+        second: {r: 0.54, g: 0.95, b: 0.99, a: 0.5}
+      data:
+        first:
+          name: _BumpDirection
+        second: {r: 1, g: 1, b: -1, a: 1}
+      data:
+        first:
+          name: _BumpTiling
+        second: {r: 1, g: 1, b: -2, a: 3}
+      data:
+        first:
+          name: _Color
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _DistortParams
+        second: {r: 1, g: 1, b: 2, a: 1.15}
+      data:
+        first:
+          name: _Foam
+        second: {r: 0.1, g: 0.375, b: 0, a: 0}
+      data:
+        first:
+          name: _GAmplitude
+        second: {r: 0.3, g: 0.35, b: 0.25, a: 0.25}
+      data:
+        first:
+          name: _GDirectionAB
+        second: {r: 0.3, g: 0.85, b: 0.85, a: 0.25}
+      data:
+        first:
+          name: _GDirectionCD
+        second: {r: 0.1, g: 0.9, b: 0.5, a: 0.5}
+      data:
+        first:
+          name: _GFrequency
+        second: {r: 1.3, g: 1.35, b: 1.25, a: 1.25}
+      data:
+        first:
+          name: _GSpeed
+        second: {r: 1.2, g: 1.375, b: 1.1, a: 1.5}
+      data:
+        first:
+          name: _GSteepness
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _InvFadeParemeter
+        second: {r: 0.15, g: 0.15, b: 0.5, a: 1}
+      data:
+        first:
+          name: _ReflectionColor
+        second: {r: 0.54, g: 0.95, b: 0.99, a: 0.5}
+      data:
+        first:
+          name: _SpecColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _SpecularColor
+        second: {r: 0.72, g: 0.72, b: 0.72, a: 1}
+      data:
+        first:
+          name: _TintColor
+        second: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+      data:
+        first:
+          name: _WorldLightDir
+        second: {r: 0, g: 0.1, b: -0.5, a: 0}

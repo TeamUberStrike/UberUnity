@@ -25,13 +25,15 @@ public class LobbyStats : MonoBehaviour
     void Start()
     {
         client = transform.parent.parent.gameObject.GetComponent<Client>();
+        if (client == null) return;
         localName = client.localName;
 
         // default servername
         if (client.host == "127.0.0.1") serverNameText.text = "[FI] Debug";
         else serverNameText.text = client.host;
 
-        globalResources = GameObject.Find("/Global Resources").GetComponent<GlobalResources>();
+        GameObject globalResourcesObject = GameObject.Find("/Global Resources");
+        if (globalResourcesObject != null) globalResources = globalResourcesObject.GetComponent<GlobalResources>();
     }
 
     void OnEnable()
@@ -44,6 +46,8 @@ public class LobbyStats : MonoBehaviour
 
     void Update()
     {
+        if (client == null) return;
+
         //get new datas
         playerDatas = client.playerDatas;
 
@@ -63,7 +67,7 @@ public class LobbyStats : MonoBehaviour
         t.GetChild(4).gameObject.GetComponent<Text>().text = client.deaths + ""; //deaths
         t.GetChild(5).gameObject.GetComponent<Text>().text = KDR(client.kills / client.deaths); //kdr 
         if(!client.isAlive) t.GetChild(6).gameObject.GetComponent<Image>().color = Color.white;
-        else
+        else if (globalResources != null && client.localWeaponId >= 0 && client.localWeaponId < globalResources.weapons.Count)
         {
             t.GetChild(1).gameObject.SetActive(true);
             t.GetChild(2).gameObject.SetActive(true);
@@ -76,7 +80,7 @@ public class LobbyStats : MonoBehaviour
         //others
         foreach (object o in playerDatas.Values)
         {
-            PlayerData p = (PlayerData)o; 
+            PlayerDataOriginal p = (PlayerDataOriginal)o; 
             GameObject statItemClone = Instantiate(statListItemPrefab);
             Transform t2 = statItemClone.transform;
 
@@ -86,7 +90,7 @@ public class LobbyStats : MonoBehaviour
             t2.GetChild(4).gameObject.GetComponent<Text>().text = p.deaths+""; //deaths
             t2.GetChild(5).gameObject.GetComponent<Text>().text = KDR(p.kills / p.deaths); //kdr 
             if (!p.isAlive) t2.GetChild(6).gameObject.GetComponent<Image>().color = Color.white;
-            else
+            else if (globalResources != null && p.weapon >= 0 && p.weapon < globalResources.weapons.Count)
             {
                 t2.GetChild(1).gameObject.SetActive(true);
                 t2.GetChild(2).gameObject.SetActive(true);

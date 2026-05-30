@@ -143,7 +143,12 @@ public class PlayerUI : MonoBehaviour
 
     internal void SetIcon(int itemId, GameObject item)
     {
-        ((itemId == 0) ? primaryIcon : secondaryIcon).GetComponent<Image>().sprite = item.GetComponent<QuickItem>().icon;      
+        if (item == null) return;
+        var quickItem = item.GetComponent<QuickItemOriginal>();
+        if (quickItem != null && quickItem.icon != null)
+        {
+            ((itemId == 0) ? primaryIcon : secondaryIcon).GetComponent<Image>().sprite = quickItem.icon;
+        }
     }
 
     public void Zoom(float input)
