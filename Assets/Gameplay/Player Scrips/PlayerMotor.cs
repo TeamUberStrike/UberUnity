@@ -42,12 +42,18 @@ public class PlayerMotor : MonoBehaviour
     private float moveSpeed = 0f;
     private bool sideways = false;
 
-    public float groundMoveSpeed = 7f;  // Original: LevelEnviroment.PlayerWalkSpeed = 7
+    public float groundMoveSpeed = 7.6f;  // Authentic: CharacterMoveController.PlayerWalkSpeed = 7.6
     internal float rotationSpeed = 75f;
     internal float originalRotationSpeed = 75f;
-    [Header("Jump Settings — measured from 4.3.8 analyzers")]
-    public float jumpForce = 14.5f;  // Measured: 14.5 initial vel.y (code=15). Height ≈ 2.03 units
-    public float uberGravity = 45f;  // Tuned: 45 feels right (original code=50, slightly floatier)
+    [Header("Movement — authentic UberStrike 4.7.1 (CharacterMoveController) constants")]
+    public float jumpForce = 15f;     // PlayerJumpSpeed = 15
+    public float uberGravity = 50f;   // EnviromentSettings.Gravity = 50
+    public float groundAccel = 15f;   // GroundAcceleration
+    public float airAccel = 3f;       // AirAcceleration — low value enables strafe-jump / bunny-hop
+    public float groundFriction = 8f; // GroundFriction
+    public float stopSpeed = 8f;      // StopSpeed
+    public float maxHorizontalSpeed = 22.8f; // ClampHorizontally (3x walk = StrafeJumpMultiplier)
+    private Vector3 horizVel = Vector3.zero;  // persistent horizontal velocity (carries momentum)
     [Header("Pad Settings")]
     public float maxPadVerticalVel = 45f;  // Cap to prevent ceiling clipping on enclosed maps
     private Rigidbody primaryQuickItem;
@@ -78,9 +84,9 @@ public class PlayerMotor : MonoBehaviour
     {
         // Enforce physics values on every spawn — prevents prefab serialized values
         // from overriding tuned values on death/respawn. Remove once prefab is updated.
-        groundMoveSpeed = 7f;
-        jumpForce = 14.5f;
-        uberGravity = 45f;
+        groundMoveSpeed = 7.6f;  // authentic PlayerWalkSpeed
+        jumpForce = 15f;         // authentic PlayerJumpSpeed
+        uberGravity = 50f;       // authentic EnviromentSettings.Gravity
         maxPadVerticalVel = 45f;
 
         capsule = GetComponent<Collider>();
@@ -295,35 +301,29 @@ public class PlayerMotor : MonoBehaviour
         // Player movement
         SetMoveSpeed();
 
-        // --- Air strafe acceleration (Quake-style, matches original AirAcceleration=3) ---
-        // When airborne and strafing, add speed in the wish direction via padPush.
-        // This is what makes bunny hopping build speed.
-        if (!isGrounded && movement.sqrMagnitude > 0.01f)
-        {
-            Vector3 wishDir = transform.TransformDirection(movement).normalized;
-            float wishSpeed = moveSpeed;
-            float currentSpeed = Vector3.Dot(padPush, wishDir);
-            float addSpeed = wishSpeed - currentSpeed;
-            if (addSpeed > 0)
-            {
-                float accelAmount = Mathf.Min(3f * wishSpeed * dt, addSpeed);
-                padPush += wishDir * accelAmount;
-            }
-        }
+        // --- Authentic 4.7.1 horizontal movement: Quake accel + friction (CharacterMoveController) ---
+        // horizVel carries momentum across frames. Ground friction decelerates you; the low
+        // air-acceleration (3) with NO air friction is exactly what builds speed when strafe-jumping.
+        Vector3 wishDir = transform.TransformDirection(movement);
+        wishDir.y = 0f;
+        if (wishDir.sqrMagnitude > 1f) wishDir.Normalize();
 
-        // --- Set Rigidbody velocity directly (physics engine handles collision) ---
-        // Previous approach: MovePosition + zero velocity → bypassed collision detection when airborne.
-        // New approach: set linearVelocity and let ContinuousDynamic collision mode do its job.
-        // The physics engine sweeps for collisions — walls/ceilings will block movement naturally.
-        Vector3 walkVelocity = transform.TransformDirection(movement) * moveSpeed;
-        Vector3 verticalVel = Vector3.up * verticalVelocity;
-        rigidBody.linearVelocity = walkVelocity + verticalVel + padPush;
+        if (isGrounded && !climbing) ApplyFriction(dt);
+        ApplyAcceleration(wishDir, moveSpeed, isGrounded ? groundAccel : airAccel, dt);
 
-        // Decay padPush — fast on ground (stops sliding), slow in air (preserves momentum)
+        // Clamp horizontal speed (original ClampHorizontally = 22.8)
+        if (horizVel.sqrMagnitude > maxHorizontalSpeed * maxHorizontalSpeed)
+            horizVel = horizVel.normalized * maxHorizontalSpeed;
+
+        // --- Apply: Quake horizontal + manual vertical + external push (pads / explosions / ladder) ---
+        // linearVelocity is set fresh each frame; the physics engine resolves wall/ceiling collisions.
+        rigidBody.linearVelocity = new Vector3(horizVel.x, verticalVelocity, horizVel.z) + padPush;
+
+        // Decay external push only (pads/explosions/ladder). Walk deceleration is ApplyFriction above.
         if (isGrounded)
-            padPush = Vector3.Lerp(padPush, Vector3.zero, 8f * dt);  // Ground friction — stops quickly
+            padPush = Vector3.Lerp(padPush, Vector3.zero, 8f * dt);
         else
-            padPush = Vector3.Lerp(padPush, Vector3.zero, 1.5f * dt);  // Air — moderate decay
+            padPush = Vector3.Lerp(padPush, Vector3.zero, 1.5f * dt);
 
         // Player body rotation (uses accumulated mouse input)
         Quaternion deltaRotation = Quaternion.Euler(new Vector3(0f, accumulatedMouseX, 0f) * rotationSpeed);
@@ -362,6 +362,30 @@ public class PlayerMotor : MonoBehaviour
 
         hand.transform.localPosition = new Vector3(0.263f, hand.transform.localPosition.y + -1f * playerRotationX * 0.001f,0.573f);
         hand.transform.localPosition = Vector3.SmoothDamp(hand.transform.localPosition, new Vector3(0.263f, handPositionY, 0.573f), ref handVelocity, handTime * Time.deltaTime);
+    }
+
+    // --- Authentic Quake-style helpers (ported from CharacterMoveController 4.7.1) ---
+
+    // Ground friction: bleed off speed toward zero. No friction in air → momentum for bunny-hop.
+    private void ApplyFriction(float dt)
+    {
+        float speed = horizVel.magnitude;
+        if (speed < 0.0001f) { horizVel = Vector3.zero; return; }
+        float control = Mathf.Max(stopSpeed, speed);
+        float drop = control * groundFriction * dt;
+        float newSpeed = Mathf.Max(speed - drop, 0f) / speed;
+        horizVel *= newSpeed;
+    }
+
+    // Accelerate toward wishDir up to wishSpeed along that axis (classic Quake ground/air accel).
+    private void ApplyAcceleration(Vector3 wishDir, float wishSpeed, float accel, float dt)
+    {
+        float current = Vector3.Dot(horizVel, wishDir);
+        float add = wishSpeed - current;
+        if (add <= 0f) return;
+        float accelSpeed = accel * wishSpeed * dt;
+        if (accelSpeed > add) accelSpeed = add;
+        horizVel += wishDir * accelSpeed;
     }
 
     // Camera rotation in LateUpdate for smooth mouse look (runs every render frame, not fixed timestep)

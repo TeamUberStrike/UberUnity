@@ -77,7 +77,7 @@ public class ApplicationOptions
 			QualitySettings.SetQualityLevel(2, true);
 			PlayerPrefs.SetString("Version", "4.7.1");
 		}
-		Application.targetFrameRate = -1;
+		Application.targetFrameRate = 200; // cap FPS (was -1 = unlimited, which pegged the GPU at 80-90% rendering the menu).
 		QualitySettings.maxQueuedFrames = -1;
 		IsUsingCustom = CmunePrefs.ReadKey(CmunePrefs.Key.Options_VideoIsUsingCustom, IsUsingCustom);
 		VideoWaterMode = CmunePrefs.ReadKey(CmunePrefs.Key.Options_VideoWaterMode, VideoWaterMode);
