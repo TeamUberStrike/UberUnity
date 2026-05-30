@@ -54,8 +54,9 @@ public class TopBarUI : MonoBehaviour
     void Start()
     {
         // Skybox
-        if(GameObject.Find("/Environment"))
-        if(GameObject.Find("/Environment").GetComponent<Environment>().skybox!=null)RenderSettings.skybox = GameObject.Find("/Environment").GetComponent<Environment>().skybox;
+        GameObject environmentObject = GameObject.Find("/Environment");
+        Environment environment = environmentObject != null ? environmentObject.GetComponent<Environment>() : null;
+        if (environment != null && environment.skybox != null) RenderSettings.skybox = environment.skybox;
 
 
         //audio
@@ -313,7 +314,8 @@ public class TopBarUI : MonoBehaviour
     {
         string newName = PlayerPrefs.GetString("username");
         topBarUsername.GetComponent<Text>().text = newName;
-        if (GameObject.Find("/Player Avatar")) GameObject.Find("/Player Avatar").SendMessage("UpdateNameTag");
+        GameObject playerAvatar = GameObject.Find("/Player Avatar");
+        if (playerAvatar != null) playerAvatar.SendMessage("UpdateNameTag");
     }
 
     // clears all local data
@@ -325,16 +327,28 @@ public class TopBarUI : MonoBehaviour
 
     public void SpawnPlayerInGame()
     {
-        if (inTheMenus|| respawnCanvas.GetChild(0).gameObject.GetComponent<RespawnManager>().currentTime>0) return;
+        if (inTheMenus || respawnCanvas == null || respawnCanvas.childCount == 0) return;
+
+        GameObject respawnPanel = respawnCanvas.GetChild(0).gameObject;
+        RespawnManager respawnManager = respawnPanel.GetComponent<RespawnManager>();
+        if (respawnManager != null && respawnManager.currentTime > 0) return;
 
         spawnActions.SetActive(false);
 
         // hide player avatar
         if(GameObject.Find("/Player Avatar")) GameObject.Find("/Player Avatar").SetActive(false);
-        respawnCanvas.GetChild(0).gameObject.SetActive(false);
+        respawnPanel.SetActive(false);
 
         // create player
-        GameObject.Find("/Network Client").GetComponent<Client>().LocalPlayerSpawn();
+        GameObject networkClientObject = GameObject.Find("/Network Client");
+        Client networkClient = networkClientObject != null ? networkClientObject.GetComponent<Client>() : null;
+        if (networkClient == null)
+        {
+            Debug.LogWarning("SpawnPlayerInGame skipped because /Network Client was not found.");
+            return;
+        }
+
+        networkClient.LocalPlayerSpawn();
 
         HideMenuSystemForGame();
     }
@@ -353,13 +367,15 @@ public class TopBarUI : MonoBehaviour
     {
         gameObject.SetActive(true);
         NavigationBar(2);
-        respawnCanvas.GetChild(0).gameObject.SetActive(false);
+        if (respawnCanvas != null && respawnCanvas.childCount > 0)
+            respawnCanvas.GetChild(0).gameObject.SetActive(false);
         //if(GameObject.Find("/Dead Player")) GameObject.Find("/Dead Player").GetComponentInChildren<Camera>().rect = new Rect(-0.33f, 0f, 1f, 1f);
     }
     
     public void ResumeGame()
     {
-        GameObject.Find("/Player").SendMessage("ContinueGame");
+        GameObject player = GameObject.Find("/Player");
+        if (player != null) player.SendMessage("ContinueGame");
         HideMenuSystemForGame();
 
     }
@@ -377,12 +393,23 @@ public class TopBarUI : MonoBehaviour
 
     public void LeaveServer()
     {
-        GameObject.Find("/Network Client").GetComponent<Client>().Quit();
+        GameObject networkClientObject = GameObject.Find("/Network Client");
+        Client networkClient = networkClientObject != null ? networkClientObject.GetComponent<Client>() : null;
+        if (networkClient == null)
+        {
+            Debug.LogWarning("LeaveServer skipped Client.Quit because /Network Client was not found.");
+        }
+        else
+        {
+            networkClient.Quit();
+        }
+
         SceneManager.LoadScene("MainMenu");
     }
 
     public void KillYourself()
     {
-        if (GameObject.Find("/Player")) GameObject.Find("/Player").SendMessage("KillYourself");
+        GameObject player = GameObject.Find("/Player");
+        if (player != null) player.SendMessage("KillYourself");
     }
 }

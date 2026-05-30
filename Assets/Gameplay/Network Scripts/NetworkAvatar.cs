@@ -30,7 +30,10 @@ public class NetworkAvatar : MonoBehaviour
     void Start()
     {
         player = GetComponent<NetworkPlayer>();
-        globalResources = GameObject.Find("/Global Resources").GetComponent<GlobalResources>();
+        GameObject globalResourcesObject = GameObject.Find("/Global Resources");
+        if (globalResourcesObject != null) globalResources = globalResourcesObject.GetComponent<GlobalResources>();
+        if (globalResources == null) return;
+
         appereances = globalResources.appereancesPrefab;
         lutzDefaultHat = globalResources.lutzDefaultHatPrefab;
     }

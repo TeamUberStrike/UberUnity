@@ -15,7 +15,7 @@ public class NetworkPlayer : MonoBehaviour
     private GlobalResources globalResources;
     private GameObject enemyRagdoll;
 
-    private PlayerData latestPlayerData;
+    private PlayerDataOriginal latestPlayerData;
 
     public Transform groundRayOrigin;
     public Transform raycastPivot;
@@ -38,19 +38,27 @@ public class NetworkPlayer : MonoBehaviour
         nameTag.GetChild(0).gameObject.GetComponent<Text>().text = networkName;
 
         // get client
-        client = GameObject.Find("/Network Client").GetComponent<Client>();
+        GameObject networkClientObject = GameObject.Find("/Network Client");
+        if (networkClientObject != null) client = networkClientObject.GetComponent<Client>();
 
         // get global resources
-        globalResources = GameObject.Find("/Global Resources").GetComponent<GlobalResources>();
+        GameObject globalResourcesObject = GameObject.Find("/Global Resources");
+        if (globalResourcesObject != null) globalResources = globalResourcesObject.GetComponent<GlobalResources>();
 
         // log message
-        client.log.LogMessage(networkName, " joined the game", "", false, false);
+        if (client != null && client.log != null)
+        {
+            client.log.LogMessage(networkName, " joined the game", "", false, false);
+        }
 
         // set obj link
-        ((PlayerData)client.playerDatas[networkId]).playerObject = gameObject;
+        if (client != null && client.playerDatas[networkId] != null)
+        {
+            ((PlayerDataOriginal)client.playerDatas[networkId]).playerObject = gameObject;
+        }
 
         //ragdoll
-        enemyRagdoll = globalResources.enemyRagdoll;
+        if (globalResources != null) enemyRagdoll = globalResources.enemyRagdoll;
 
         //audio
         playerAudio = GetComponent<PlayerAudio>();
@@ -58,9 +66,11 @@ public class NetworkPlayer : MonoBehaviour
 
     void Update()
     {
+        if (client == null) return;
+
         // Disconnect player
         if (latestPlayerData!=null&&latestPlayerData.destroy){
-            client.log.LogMessage(networkName, " left the game", "", false, false);
+            if (client.log != null) client.log.LogMessage(networkName, " left the game", "", false, false);
             Destroy(gameObject);
             return;}
 
@@ -71,6 +81,7 @@ public class NetworkPlayer : MonoBehaviour
         // Get latest data ///////////////////////////////////
         latestPlayerData = client.GetLatestDatas(networkId);//
         //////////////////////////////////////////////////////
+        if (latestPlayerData == null) return;
         
         // appereances & weapons
         if (latestPlayerData.appereancesChanged) LoadAppereances();
@@ -81,8 +92,8 @@ public class NetworkPlayer : MonoBehaviour
         if (latestPlayerData.pendingFinalWord) FinalWord();
 
         // death
-        if (latestPlayerData.position.y!=-666) ((PlayerData)client.playerDatas[networkId]).isAlive = true;
-        else ((PlayerData)client.playerDatas[networkId]).isAlive = false;
+        if (latestPlayerData.position.y!=-666) ((PlayerDataOriginal)client.playerDatas[networkId]).isAlive = true;
+        else ((PlayerDataOriginal)client.playerDatas[networkId]).isAlive = false;
 
         // position
         transform.position = Vector3.Lerp(transform.position, latestPlayerData.position, 0.3f);
@@ -97,7 +108,8 @@ public class NetworkPlayer : MonoBehaviour
         raycastPivot.localRotation = Quaternion.Euler(latestPlayerData.subRotation);
 
         // nameTag
-        nameTag.LookAt(2 * nameTag.position - client.playerCamera.position);
+        if (client.playerCamera != null)
+            nameTag.LookAt(2 * nameTag.position - client.playerCamera.position);
         nameTag.gameObject.SetActive(client.isAlive);
 
         // ground
@@ -115,10 +127,10 @@ public class NetworkPlayer : MonoBehaviour
 
     void Die()
     {
-        ((PlayerData)client.playerDatas[networkId]).die = false;
+        ((PlayerDataOriginal)client.playerDatas[networkId]).die = false;
 
         // drop weapon
-        GameObject wPrefab = globalResources.weapons[((PlayerData)client.playerDatas[networkId]).weapon];
+        GameObject wPrefab = globalResources.weapons[((PlayerDataOriginal)client.playerDatas[networkId]).weapon];
         PickupWeapon w = Instantiate(drop, latestPlayerData.position+(Vector3.up*2), Quaternion.identity);
         w.weaponPrefab = wPrefab;
         Destroy(w.gameObject, 8f);
@@ -137,10 +149,10 @@ public class NetworkPlayer : MonoBehaviour
         Destroy(cc,8f);
 
         //force
-        if (((PlayerData)client.playerDatas[networkId]).lastKiller > 0)
+        if (((PlayerDataOriginal)client.playerDatas[networkId]).lastKiller > 0)
         {
             Vector3 pos;
-            if (client.GetLatestDatas(((PlayerData)client.playerDatas[networkId]).lastKiller) != null) pos = client.GetLatestDatas(((PlayerData)client.playerDatas[networkId]).lastKiller).position;
+            if (client.GetLatestDatas(((PlayerDataOriginal)client.playerDatas[networkId]).lastKiller) != null) pos = client.GetLatestDatas(((PlayerDataOriginal)client.playerDatas[networkId]).lastKiller).position;
             else if (GameObject.Find("/Player")) pos = GameObject.Find("/Player").transform.position;
             else pos = transform.position;
 
@@ -152,7 +164,7 @@ public class NetworkPlayer : MonoBehaviour
 
     void LoadAppereances()
     {
-        ((PlayerData)client.playerDatas[networkId]).appereancesChanged = false;
+        ((PlayerDataOriginal)client.playerDatas[networkId]).appereancesChanged = false;
 
         // get appereances
         GameObject holo = (latestPlayerData.holo<=0) ? null : globalResources.appereances[latestPlayerData.holo];
@@ -181,14 +193,14 @@ public class NetworkPlayer : MonoBehaviour
 
     void EquipWeapon()
     {
-        ((PlayerData)client.playerDatas[networkId]).weaponChanged = false;
+        ((PlayerDataOriginal)client.playerDatas[networkId]).weaponChanged = false;
 
         // clear all
         for (int i = 0; i < weaponHand.childCount; i++)
             Destroy(weaponHand.GetChild(i).gameObject);
 
         // add current
-        GameObject newWeapon = Instantiate(FixedAudio(globalResources.weapons[((PlayerData)client.playerDatas[networkId]).weapon]), weaponHand.position,weaponHand.rotation);
+        GameObject newWeapon = Instantiate(FixedAudio(globalResources.weapons[((PlayerDataOriginal)client.playerDatas[networkId]).weapon]), weaponHand.position,weaponHand.rotation);
         Destroy(newWeapon.GetComponent<Animator>());
         newWeapon.transform.parent = weaponHand;
         newWeapon.transform.localRotation = Quaternion.Euler(0f, 90f, 90f);
@@ -201,7 +213,7 @@ public class NetworkPlayer : MonoBehaviour
         //get hit point
         RaycastHit t = GetFireHitPoint();       
 
-        ((PlayerData)client.playerDatas[networkId]).pendingPrimaryFire = false;
+        ((PlayerDataOriginal)client.playerDatas[networkId]).pendingPrimaryFire = false;
 
         // sound
         if(weaponHand.childCount>0)
@@ -270,7 +282,7 @@ public class NetworkPlayer : MonoBehaviour
     //detonate final word/kiss grenades
     internal void FinalWord()
     {
-        ((PlayerData)client.playerDatas[networkId]).pendingFinalWord = false;
+        ((PlayerDataOriginal)client.playerDatas[networkId]).pendingFinalWord = false;
         if (weaponHand.childCount > 0)
             if (weaponHand.GetChild(0).gameObject.GetComponent<Weapon>())
                 if (weaponHand.GetChild(0).gameObject.name.ToLower().Contains("final"))

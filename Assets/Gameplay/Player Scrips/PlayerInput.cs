@@ -21,9 +21,9 @@ public class PlayerInput : MonoBehaviour
     // This method reads player input every frame
     private void Update()
     {
-        // Get WASD
-        float x = Input.GetAxis("Vertical");
-        float z = Input.GetAxis("Horizontal");
+        // Get WASD — use GetAxisRaw for instant response (no Unity smoothing)
+        float x = Input.GetAxisRaw("Vertical");
+        float z = Input.GetAxisRaw("Horizontal");
         playerMotor.Move(x, z);
 
         // Get mouse
@@ -39,8 +39,11 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetButtonDown("Fire1")) { playerMotor.Shoot(true); }
         if (Input.GetButtonUp("Fire1")) { playerMotor.Shoot(false); }
 
-        // Get spacebar
-        if (Input.GetButtonDown("Jump")) { playerMotor.Jump(); }
+        // Track jump key state continuously — original UberStrike checks held state
+        // every physics frame, not just button-down events. This enables bunny hopping:
+        // press space mid-air → lands → instant jump on next physics frame.
+        playerMotor.jumpHeld = Input.GetButton("Jump");
+        if (Input.GetButtonUp("Jump")) { playerMotor.JumpReleased(); }
 
         // Get mouse scroll wheel
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -52,11 +55,12 @@ public class PlayerInput : MonoBehaviour
         // Get E key
         if (Input.GetKeyDown(KeyCode.E)) { playerMotor.UseItem(1); }
 
-        // Weapon switch shorcuts
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(1); }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(4); }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(3); }
-        if (Input.GetKeyDown(KeyCode.Alpha4)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(2); }
+        // Weapon switch: 1=Melee, 2=Primary, 3=Secondary, 4=Tertiary
+        // Hand hierarchy: child 0=Primary, child 1=Melee, child 2=Secondary, child 3=Tertiary
+        if (Input.GetKeyDown(KeyCode.Alpha1)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(2); }  // Melee = index 1
+        if (Input.GetKeyDown(KeyCode.Alpha2)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(1); }  // Primary = index 0
+        if (Input.GetKeyDown(KeyCode.Alpha3)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(3); }  // Secondary = index 2
+        if (Input.GetKeyDown(KeyCode.Alpha4)) { playerMotor.Aim(true); playerMotor.Aim(false); playerMotor.SetWeapon(4); }  // Tertiary = index 3
 
         // Pause
         // This Input is hardcoded. We should make input axis for this later
@@ -67,10 +71,9 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P)) { playerUI.ToggleHUD(); }
 
 
-        // Get ctrl key for crouch
-        // This Input is hardcoded. We should make input axis for this later
-        if (Input.GetKeyDown(KeyCode.LeftControl)) { playerMotor.Crouch(true); }
-        if (Input.GetKeyUp(KeyCode.LeftControl)) { playerMotor.Crouch(false); }
+        // Get shift key for crouch
+        if (Input.GetKeyDown(KeyCode.LeftShift)) { playerMotor.Crouch(true); }
+        if (Input.GetKeyUp(KeyCode.LeftShift)) { playerMotor.Crouch(false); }
 
     }
 

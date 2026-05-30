@@ -23,9 +23,15 @@ public class MouseOrbitImproved : MonoBehaviour
     void Start()
     {
         // Skybox
-        RenderSettings.skybox = GameObject.Find("/Environment").GetComponent<Environment>().skybox;
+        GameObject environmentObject = GameObject.Find("/Environment");
+        Environment environment = environmentObject != null ? environmentObject.GetComponent<Environment>() : null;
+        if (environment != null) RenderSettings.skybox = environment.skybox;
 
-        target = GameObject.Find("/Player Avatar").transform.GetChild(2);
+        GameObject playerAvatar = GameObject.Find("/Player Avatar");
+        if (playerAvatar != null && playerAvatar.transform.childCount > 2)
+        {
+            target = playerAvatar.transform.GetChild(2);
+        }
 
         Vector3 angles = transform.eulerAngles;
         x = angles.y;
@@ -48,6 +54,8 @@ public class MouseOrbitImproved : MonoBehaviour
 
     private void Run()
     {
+        if (target == null) return;
+
         x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
         y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
 

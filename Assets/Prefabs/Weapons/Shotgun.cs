@@ -40,6 +40,7 @@ public class Shotgun : Weapon, IWeapon
         if (shellIndex) SpitShell(shellIndex, shellSpeed, 2);
 
         FireMuzzle();
+        if (bulletTrail == null) return;
 
 
         List<RaycastHit> hitData = GetRaycastHitObject(maxRange, spread, shotCount);
@@ -116,6 +117,8 @@ public class Shotgun : Weapon, IWeapon
 
     internal override void NetworkFire(RaycastHit target)
     {
+        if (bulletTrail == null) return;
+
         List<RaycastHit> hitData = GetRaycastHitObject(muzzleIndex, target.point, spread, shotCount);
 
         if (hitData.Count > 0)

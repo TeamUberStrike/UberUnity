@@ -56,11 +56,9 @@ public class CreateGamePopup : MonoBehaviour
 
     public void CreateGame()
     {
-        if (gameMode == 2)
-        {
-            container.SetActive(false);
-            StartCoroutine(LoadAsync(map+2));
-        }
+        container.SetActive(false);
+        // Scene indices: 0=GlobalScene, 1=MainMenu, 2=Intro, 3+=Maps
+        StartCoroutine(LoadAsync(map+3));
     }
 
     public void CancelGame()

@@ -65,12 +65,11 @@
 				UNITY_TRANSFER_LIGHTING(o,v.texcoord0.xy);
 		#endif
 
-		//vertex fog
+		//vertex fog (fogCoord only declared on Unity < 2018; Unity 6 struct uses UNITY_LIGHTING_COORDS, no fogCoord)
+		#if UNITY_VERSION < 201800
 		UNITY_TRANSFER_FOG(o,o.pos);
 		#endif
-
-		//vertex fog
-		UNITY_TRANSFER_FOG(o,o.pos);
+		#endif
 
 		#if UNITY_UV_STARTS_AT_TOP
 			float scale = -1.0;
@@ -114,8 +113,10 @@
 		
 		mkts.Color_Out.a = lerp(0.625, 0.95, _MainTint);
 
-		//if enabled add some fog - forward rendering only
+		//if enabled add some fog - forward rendering only (fogCoord only on Unity < 2018)
+		#if UNITY_VERSION < 201800
 		UNITY_APPLY_FOG(o.fogCoord, mkts.Color_Out);
+		#endif
 		return mkts.Color_Out;
 	}
 #endif
