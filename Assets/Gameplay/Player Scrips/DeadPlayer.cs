@@ -40,7 +40,11 @@ public class DeadPlayer : MonoBehaviour
 
     void SetWeapon(int weaponId)
     {
-        GameObject wPrefab = GameObject.Find("/Global Resources").GetComponent<GlobalResources>().weapons[weaponId];
+        GameObject globalResourcesObject = GameObject.Find("/Global Resources");
+        GlobalResources globalResources = globalResourcesObject != null ? globalResourcesObject.GetComponent<GlobalResources>() : null;
+        if (globalResources == null || weaponId < 0 || weaponId >= globalResources.weapons.Count) return;
+
+        GameObject wPrefab = globalResources.weapons[weaponId];
         GameObject w = Instantiate(wPrefab, weapon.position, weapon.rotation);
         Destroy(w.GetComponent<Animator>());
         Destroy(w.GetComponent<Weapon>());

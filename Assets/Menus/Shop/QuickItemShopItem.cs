@@ -10,12 +10,12 @@ public class QuickItemShopItem : ShopItem, IShopItem
 
     internal override string GetName()
     {
-        return prefab.GetComponent<QuickItem>().itemName;
+        return prefab.GetComponent<QuickItemOriginal>().itemName;
     }
 
     internal override Sprite GetThumb()
     {
-        return prefab.GetComponent<QuickItem>().thumbnail;
+        return prefab.GetComponent<QuickItemOriginal>().thumbnail;
     }
 
     // quickitems are not created dynamically, 

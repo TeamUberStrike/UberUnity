@@ -24,11 +24,11 @@ public class SpringGrenade : MonoBehaviour
     {
         if (other.tag == "Player" && isArmed)
         {
-            // Explode grenade
-            Vector3 forceVector = new Vector3(0f, jumpForce, 0f);
-            other.gameObject.SendMessage("PowerUp", forceVector);
+            // Spring grenade — launches player upward (additive)
+            // Original: ForceType.Additive with force=1250 → 1250*0.035 = 43.75 vel
+            Vector3 springForce = new Vector3(0f, jumpForce * 15f, 0f);
+            other.gameObject.SendMessage("ApplyExplosionForce", springForce, SendMessageOptions.DontRequireReceiver);
             Destroy(gameObject);
-            other.gameObject.SendMessage("SetCanUsePowerUp", true);
 
             // Sound
             PlayerAudio audio = other.gameObject.GetComponent<PlayerAudio>();

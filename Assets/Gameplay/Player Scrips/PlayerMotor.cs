@@ -30,15 +30,26 @@ public class PlayerMotor : MonoBehaviour
     private bool climbing = false;
     private bool swim = false;
 
+    // Manual vertical velocity — decoupled from Rigidbody to match CharacterController behavior
+    private float verticalVelocity = 0f;
+
+    // Accumulated mouse input between frames for smooth camera
+    private float accumulatedMouseX = 0f;
+    private float accumulatedMouseY = 0f;
+
     public ParticleSystem distortion;
 
     private float moveSpeed = 0f;
     private bool sideways = false;
 
-    public float groundMoveSpeed = 6f;
-    internal float rotationSpeed = 75f; //45
+    public float groundMoveSpeed = 7f;  // Original: LevelEnviroment.PlayerWalkSpeed = 7
+    internal float rotationSpeed = 75f;
     internal float originalRotationSpeed = 75f;
-    public float jumpForce = 33f;
+    [Header("Jump Settings — measured from 4.3.8 analyzers")]
+    public float jumpForce = 14.5f;  // Measured: 14.5 initial vel.y (code=15). Height ≈ 2.03 units
+    public float uberGravity = 45f;  // Tuned: 45 feels right (original code=50, slightly floatier)
+    [Header("Pad Settings")]
+    public float maxPadVerticalVel = 45f;  // Cap to prevent ceiling clipping on enclosed maps
     private Rigidbody primaryQuickItem;
     private Rigidbody secondaryQuickItem;
     public Transform playerCamera;
@@ -55,6 +66,7 @@ public class PlayerMotor : MonoBehaviour
     private Animator handAnimator;
     private float rbDrag;
     private bool canJump = true;
+    internal bool jumpHeld = false;  // Set by PlayerInput every frame (continuous state)
     private bool crouching = false;
     private Animator cameraAnimator;
 
@@ -64,6 +76,13 @@ public class PlayerMotor : MonoBehaviour
     // Runs before first frame
     void Start()
     {
+        // Enforce physics values on every spawn — prevents prefab serialized values
+        // from overriding tuned values on death/respawn. Remove once prefab is updated.
+        groundMoveSpeed = 7f;
+        jumpForce = 14.5f;
+        uberGravity = 45f;
+        maxPadVerticalVel = 45f;
+
         capsule = GetComponent<Collider>();
 
         // Init array
@@ -74,16 +93,15 @@ public class PlayerMotor : MonoBehaviour
         groundRayChecks[4] = new Vector3(-groundCheckRadius / 2, 0f, groundCheckRadius / 2);
         groundRayChecks[5] = new Vector3(groundCheckRadius / 2, 0f, -groundCheckRadius / 2);
         groundRayChecks[6] = new Vector3(-groundCheckRadius / 2, 0f, -groundCheckRadius / 2);
-        groundRayChecks[7] = new Vector3(groundCheckRadius / 2, 0f, groundCheckRadius / 2);
         groundRayChecks[7] = new Vector3(0f, 0f, 0f);
 
         // Init
         playerAudio = GetComponent<PlayerAudio>();
-        cameraAnimator = playerCamera.gameObject.GetComponent<Animator>();
         playerManager = GetComponent<PlayerManager>();
         playerUI = GetComponent<PlayerUI>();
         rigidBody = GetComponent<Rigidbody>();
         playerCamera = transform.Find("Player Camera");
+        cameraAnimator = playerCamera.gameObject.GetComponent<Animator>();
         hand = playerCamera.GetChild(0).gameObject;
         handCamera = playerCamera.Find("Camera Mask").gameObject.GetComponent<Camera>();
 
@@ -91,8 +109,18 @@ public class PlayerMotor : MonoBehaviour
         lastRotation = rot.x;
         handAnimator = handCamera.GetComponent<Animator>();
 
+        // Ensure Rigidbody interpolation is on for smooth visual movement
+        rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
+
+        // Disable Unity's built-in gravity — we apply it manually to match
+        // original UberStrike's CharacterController (gravity=50, not Unity's 9.81)
+        rigidBody.useGravity = false;
+        // Prevent fast-moving player from clipping through geometry
+        rigidBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
         // Water
-        mapHasWater = GameObject.Find("/Environment").GetComponent<Environment>().mapHasWater;
+        var envObj = GameObject.Find("/Environment");
+        mapHasWater = envObj != null && envObj.GetComponent<Environment>() != null && envObj.GetComponent<Environment>().mapHasWater;
         rbDrag = rigidBody.linearDamping;
 
         UpdateOptions();
@@ -173,7 +201,7 @@ public class PlayerMotor : MonoBehaviour
         if (mapHasWater)
         {
             swim = rigidBody.position.y < 0;
-            rigidBody.useGravity = !swim;
+            // useGravity is always false — manual gravity handles swim vs air
             if (swim) rigidBody.linearDamping = 1f;
             else rigidBody.linearDamping = rbDrag;
 
@@ -210,42 +238,106 @@ public class PlayerMotor : MonoBehaviour
     // Do all movement in FixedUpdate method
     void FixedUpdate()
     {
+        // Refresh ground distance at physics rate
+        getDistanceToGround();
+        float dt = Time.fixedDeltaTime;
+
+        bool isGrounded = distanceToGround >= 0 && distanceToGround < groundLimit;
+
+        // --- Jump check every physics frame (matches original CheckJump) ---
+        // Original: checks if jump key is HELD + canJump + grounded → jumps instantly.
+        // This enables bunny hopping: press space mid-air, land, instant jump next frame.
+        if (isGrounded && jumpHeld && canJump && !crouching && !climbing && !swim)
+        {
+            canJump = false;
+            verticalVelocity = jumpForce;
+            pendingHandEffect = true;
+        }
+
+        // --- Vertical velocity (manual, like CharacterController) ---
+        // Apply gravity: _currentVelocity[1] -= Gravity * dt (original CharacterMoveController)
+        if (!isGrounded && !climbing)
+        {
+            if (swim)
+                verticalVelocity -= uberGravity * 0.1f * dt;
+            else
+                verticalVelocity -= uberGravity * dt;
+        }
+        else if (isGrounded && verticalVelocity < 0)
+        {
+            verticalVelocity = 0f;  // Stop falling when grounded
+        }
+        // Clamp vertical velocity — original: Mathf.Clamp(_currentVelocity[1], -150, 150)
+        verticalVelocity = Mathf.Clamp(verticalVelocity, -150f, 150f);
+
+        // Swim up with spacebar
+        if (swim && Input.GetKey(KeyCode.Space))
+            verticalVelocity += uberGravity * 0.3f * dt;
+
+        // Ladder climbing — W=up, S=down. Use raw vertical input directly.
+        // Don't use walk velocity (it pushes INTO ladder, collision cancels movement).
+        if (climbing)
+        {
+            float climbInput = Input.GetAxisRaw("Vertical");  // W=1, S=-1
+            if (Mathf.Abs(climbInput) > 0.1f)
+                verticalVelocity = climbInput * moveSpeed * 1.5f;
+            else
+                verticalVelocity = 0f;  // Hang on ladder when not pressing W/S
+            // Gentle push toward ladder to maintain OnCollisionStay contact
+            padPush = transform.forward * 1.5f;
+        }
+
         //physics material
-        if (distanceToGround < groundLimit && !GetTransformDirectionCollision()) capsule.material = null;
-        else 
-        if(climbing) capsule.material = null;
+        if (isGrounded && !GetTransformDirectionCollision()) capsule.material = null;
+        else if (climbing) capsule.material = null;
         else capsule.material = pMaterial;
 
         // Player movement
         SetMoveSpeed();
-        if (rigidBody.linearVelocity.magnitude>0.3f|| movement.magnitude > 0.3f) Crouch(false);
 
-        // If ladder collision
-        if (climbing && movement!=Vector3.zero) rigidBody.MovePosition(rigidBody.position + transform.TransformDirection(Vector3.up) * moveSpeed*1.5f * Time.deltaTime);
+        // --- Air strafe acceleration (Quake-style, matches original AirAcceleration=3) ---
+        // When airborne and strafing, add speed in the wish direction via padPush.
+        // This is what makes bunny hopping build speed.
+        if (!isGrounded && movement.sqrMagnitude > 0.01f)
+        {
+            Vector3 wishDir = transform.TransformDirection(movement).normalized;
+            float wishSpeed = moveSpeed;
+            float currentSpeed = Vector3.Dot(padPush, wishDir);
+            float addSpeed = wishSpeed - currentSpeed;
+            if (addSpeed > 0)
+            {
+                float accelAmount = Mathf.Min(3f * wishSpeed * dt, addSpeed);
+                padPush += wishDir * accelAmount;
+            }
+        }
 
-        // If swim
-        if (swim && GetComponent<PlayerInput>().isActiveAndEnabled&&distanceToGround>groundLimit&&!Input.GetKey(KeyCode.Space)) rigidBody.AddForce(-Vector3.up, ForceMode.Acceleration);
-        else if(Input.GetKey(KeyCode.Space)) rigidBody.AddForce(Vector3.up, ForceMode.Acceleration);
+        // --- Set Rigidbody velocity directly (physics engine handles collision) ---
+        // Previous approach: MovePosition + zero velocity → bypassed collision detection when airborne.
+        // New approach: set linearVelocity and let ContinuousDynamic collision mode do its job.
+        // The physics engine sweeps for collisions — walls/ceilings will block movement naturally.
+        Vector3 walkVelocity = transform.TransformDirection(movement) * moveSpeed;
+        Vector3 verticalVel = Vector3.up * verticalVelocity;
+        rigidBody.linearVelocity = walkVelocity + verticalVel + padPush;
 
-        Vector3 useTheForce = movement;          
-        // Jump speed gain
-        if (sideways && distanceToGround > groundLimit 
-            && !swim && !climbing && distanceToGround < groundLimit + 2
-            && Mathf.Abs(rigidBody.linearVelocity.z) < 6.6f && Mathf.Abs(rigidBody.linearVelocity.x) < 6.6f)
-        
-            if(sideways) rigidBody.AddForce(transform.TransformDirection(useTheForce) * moveSpeed * 1.8f,ForceMode.Acceleration);
-            //else rigidBody.AddForce(transform.TransformDirection(useTheForce) * moveSpeed * 5f);
+        // Decay padPush — fast on ground (stops sliding), slow in air (preserves momentum)
+        if (isGrounded)
+            padPush = Vector3.Lerp(padPush, Vector3.zero, 8f * dt);  // Ground friction — stops quickly
+        else
+            padPush = Vector3.Lerp(padPush, Vector3.zero, 1.5f * dt);  // Air — moderate decay
 
-        rigidBody.MovePosition(rigidBody.position + transform.TransformDirection(movement) * moveSpeed * Time.deltaTime);
+        // Player body rotation (uses accumulated mouse input)
+        Quaternion deltaRotation = Quaternion.Euler(new Vector3(0f, accumulatedMouseX, 0f) * rotationSpeed);
+        rigidBody.MoveRotation(rigidBody.rotation * deltaRotation);
+        accumulatedMouseX = 0f;
 
         // Walk anim
         if (movement.magnitude > 0.3f)
         {
             if (!handAnimator.enabled) handAnimator.Play("defaultHand");
-            
+
             // Enable animator
             handAnimator.enabled = true;
-            handAnimator.SetBool("walk", true);         
+            handAnimator.SetBool("walk", true);
         }
         else
         {
@@ -253,10 +345,10 @@ public class PlayerMotor : MonoBehaviour
             handAnimator.enabled = false;
             handAnimator.SetBool("walk", false);
 
-            float rectW = 1f; //1.2f
+            float rectW = 1f;
             handCamera.rect = new Rect(handCamera.rect.x + -1f * playerRotationY * 0.001f, 0f, rectW, rectW);
             handCamera.rect = new Rect(Mathf.SmoothDamp(handCamera.rect.x, 0f, ref handVelocityY, handTime * Time.deltaTime), 0f, rectW, rectW);
-            if (handCamera.rect.x > -0.001f && handCamera.rect.x < 0.001f) handCamera.rect = new Rect(0f,0f,1f,1f);         
+            if (handCamera.rect.x > -0.001f && handCamera.rect.x < 0.001f) handCamera.rect = new Rect(0f,0f,1f,1f);
         }
 
         // Hand Y
@@ -270,16 +362,17 @@ public class PlayerMotor : MonoBehaviour
 
         hand.transform.localPosition = new Vector3(0.263f, hand.transform.localPosition.y + -1f * playerRotationX * 0.001f,0.573f);
         hand.transform.localPosition = Vector3.SmoothDamp(hand.transform.localPosition, new Vector3(0.263f, handPositionY, 0.573f), ref handVelocity, handTime * Time.deltaTime);
+    }
 
-        // Player rotation
-        Quaternion deltaRotation = Quaternion.Euler(new Vector3(0f, playerRotationY, 0f) * rotationSpeed * Time.deltaTime);
-        rigidBody.MoveRotation(rigidBody.rotation * deltaRotation);
-
-        // Player camera rotation               
+    // Camera rotation in LateUpdate for smooth mouse look (runs every render frame, not fixed timestep)
+    void LateUpdate()
+    {
+        // Player camera vertical rotation
         float clampAngle = 89f;
-        lastRotation += playerRotationX * rotationSpeed * Time.deltaTime;
+        lastRotation += accumulatedMouseY * rotationSpeed;
         lastRotation = Mathf.Clamp(lastRotation, -clampAngle, clampAngle);
         playerCamera.localRotation = Quaternion.Euler(lastRotation, 0f, 0.0f);
+        accumulatedMouseY = 0f;
     }
 
     private void SetMoveSpeed()
@@ -290,15 +383,16 @@ public class PlayerMotor : MonoBehaviour
         
         if (aiming)
         {
-            // Slow down when aim
+            // Slow down when aim — original UberStrike: PLAYER_ZOOM_SLOWDOWN = 1.8f
             if(hand.GetComponent<PlayerHand>().currentWeapon.GetComponent<Sniper>() != null
                 || hand.GetComponent<PlayerHand>().currentWeapon.GetComponent<Machinegun>() != null)
             {
-                moveSpeed = groundMoveSpeed / 2.5f;
-            }           
+                moveSpeed = groundMoveSpeed - 1.8f;
+            }
         }
 
-        if(swim) moveSpeed = groundMoveSpeed / 4f;
+        if (crouching) moveSpeed = groundMoveSpeed * 0.23f;  // Original UberStrike: PLAYER_DUCK_SCALE
+        if (swim) moveSpeed = groundMoveSpeed * 0.4f;  // Original UberStrike: PLAYER_SWIM_SCALE
     }
 
     internal void MouseScroll(float scroll)
@@ -311,23 +405,16 @@ public class PlayerMotor : MonoBehaviour
         else if(scroll != 0) hand.SendMessage("SetWeaponIndex", scroll);       
     }
 
+    // Jump is now handled in FixedUpdate via jumpHeld state (continuous check).
+    // This method kept for any direct callers but FixedUpdate is the primary path.
     internal void Jump()
     {
         Crouch(false);
-        if (!canJump) return;
-        else StartCoroutine(CanJumpAgain());
-
-        if (distanceToGround < groundLimit+0.06 && distanceToGround > 0)
-        {
-            pendingHandEffect = true;
-            rigidBody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-        }
     }
 
-    IEnumerator CanJumpAgain()
+    // Called from PlayerInput when jump key is released
+    internal void JumpReleased()
     {
-        canJump = false;
-        yield return new WaitForSeconds(0.3f);
         canJump = true;
     }
 
@@ -378,14 +465,18 @@ public class PlayerMotor : MonoBehaviour
     {
         playerRotationY = x;
         playerRotationX = y;
+        // Accumulate for physics (FixedUpdate) and camera (LateUpdate)
+        accumulatedMouseX += x * Time.deltaTime;
+        accumulatedMouseY += y * Time.deltaTime;
     }
 
     internal void Move(float x, float z)
     {
         if (distanceToGround < groundLimit)
-            movement = Vector3.ClampMagnitude(new Vector3(z, 0f, x), 0.8f);
+            movement = Vector3.ClampMagnitude(new Vector3(z, 0f, x), 1f);
         else
-            movement = Vector3.Lerp(movement, Vector3.ClampMagnitude(new Vector3(z, 0f, x), 0.7f), 1.9f*Time.deltaTime);
+            // Air control: allow direction changes in air but slightly damped
+            movement = Vector3.Lerp(movement, Vector3.ClampMagnitude(new Vector3(z, 0f, x), 1f), 6f * Time.deltaTime);
     }
 
     // Spring grenade
@@ -416,11 +507,22 @@ public class PlayerMotor : MonoBehaviour
          
     }
 
-    public void PowerUp(Vector3 forceDirection)
+    // Temporary horizontal push from jump pads (decays over time)
+    private Vector3 padPush = Vector3.zero;
+
+    /// <summary>
+    /// Called by ForceField/JumpPad. Accepts FINAL velocity vector (already scaled).
+    /// ForceField applies * 0.035 before calling. JumpPad applies its own multiplier.
+    /// Replaces velocity entirely (original ForceType.Exclusive behavior).
+    /// </summary>
+    public void PowerUp(Vector3 finalVelocity)
     {
         if (canUsePowerUp)
         {
-            rigidBody.AddForce(forceDirection * jumpForce, ForceMode.Impulse);
+            // Cap vertical — maxPadVerticalVel prevents extreme ceiling launches
+            verticalVelocity = Mathf.Clamp(finalVelocity.y, -maxPadVerticalVel, maxPadVerticalVel);
+            // Horizontal: let physics engine handle collision (no artificial cap needed)
+            padPush = new Vector3(finalVelocity.x, 0f, finalVelocity.z);
             canUsePowerUp = false;
         }
     }
@@ -428,6 +530,21 @@ public class PlayerMotor : MonoBehaviour
     public void SetCanUsePowerUp(bool state)
     {
         canUsePowerUp = state;
+    }
+
+    /// <summary>
+    /// Apply explosion/rocket force to player. Additive — adds to current velocity
+    /// instead of replacing it (unlike PowerUp which is Exclusive).
+    /// Use this for rocket jumps, splash damage knockback, spring grenades, etc.
+    /// Original: ForceType.Additive → _currentVelocity = Scale(vel, (1, 0.5, 1)) + force * 0.035
+    /// </summary>
+    public void ApplyExplosionForce(Vector3 force)
+    {
+        // Original additive: halves existing vertical velocity, adds scaled force
+        verticalVelocity = verticalVelocity * 0.5f + force.y;
+        // Always apply horizontal — ground friction in padPush decay handles sliding.
+        // Rocket jumping at your feet while grounded needs the horizontal push to work.
+        padPush += new Vector3(force.x, 0f, force.z);
     }
 
     void getDistanceToGround()
@@ -501,10 +618,15 @@ public class PlayerMotor : MonoBehaviour
 
     internal void Crouch(bool crouch)
     {
-        if (climbing || swim || rigidBody.linearVelocity != Vector3.zero) crouch = false;
-        if(crouch==crouching) return;
-        cameraAnimator.SetBool("down",crouch);
+        // Original UberStrike: can crouch while moving (duck walk at 23% speed)
+        // Only prevent crouch when climbing, swimming, or in air
+        if (climbing || swim) crouch = false;
+        bool isGrounded = distanceToGround >= 0 && distanceToGround < groundLimit;
+        if (!isGrounded && crouch) crouch = false;  // Can't start crouching mid-air
+        if (crouch == crouching) return;
+        cameraAnimator.SetBool("down", crouch);
         crouching = crouch;
-        if (GameObject.Find("/Network Client")) GameObject.Find("/Network Client").SendMessage("LocalPlayerCrouch", crouching);
+        GameObject networkClient = GameObject.Find("/Network Client");
+        if (networkClient != null) networkClient.SendMessage("LocalPlayerCrouch", crouching);
     }
 }

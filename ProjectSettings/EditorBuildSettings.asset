@@ -6,11 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Menus/Intro.unity
-    guid: f7b286020c378264982286603976c541
+    path: Assets/Scenes/GlobalScene.unity
+    guid: 1f05f0a7b71d0f948aa23c64e11f1d87
   - enabled: 1
     path: Assets/Menus/MainMenu.unity
     guid: 850382a7f8c81ea47a2504469e81789a
+  - enabled: 1
+    path: Assets/Menus/Intro.unity
+    guid: f7b286020c378264982286603976c541
   - enabled: 1
     path: Assets/Maps/Apex_Twin/Apex_Twin.unity
     guid: c3fdb28bd94380940b61db76ac6dac05
@@ -56,5 +59,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Maps/The_Hangar/The_Hangar.unity
     guid: 4d951c4843244e845983843c4a3122d9
+  - enabled: 1
+    path: Assets/Maps/CuberStrike/CuberStrike.unity
+    guid: 91b2e7bed92e18c4a8ad5564553783ac
+  - enabled: 1
+    path: Assets/Maps/GhostIsland/GhostIsland.unity
+    guid: 1dcd903f1950d7f4da9fef161c9524c6
+  - enabled: 1
+    path: Assets/Maps/Volley/Volley.unity
+    guid: ca5011381629bf14da393b88ade88224
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

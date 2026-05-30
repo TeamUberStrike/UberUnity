@@ -53,9 +53,14 @@ public class Client : TcpEngine
         if (PlayerPrefs.HasKey("username")) localName = PlayerPrefs.GetString("username");
 
         statsCanvas = GameObject.Find("Lobby Stats UI");
-        globalResources = GameObject.Find("/Global Resources").GetComponent<GlobalResources>();
-        log = GameObject.Find("/MenuSystem/Game Log UI/1_log_container").GetComponent<LobbyLog>();
-        spawnPoints = GameObject.Find("/Environment/spawns").GetComponentsInChildren<Transform>();
+        GameObject globalResourcesObject = GameObject.Find("/Global Resources");
+        if (globalResourcesObject != null) globalResources = globalResourcesObject.GetComponent<GlobalResources>();
+
+        GameObject logObject = GameObject.Find("/MenuSystem/Game Log UI/1_log_container");
+        if (logObject != null) log = logObject.GetComponent<LobbyLog>();
+
+        GameObject spawnPointRoot = GameObject.Find("/Environment/spawns");
+        if (spawnPointRoot != null) spawnPoints = spawnPointRoot.GetComponentsInChildren<Transform>();
         AssignLocalPlayer(null);
 
         ConnectNotBlocking(host, port);
@@ -68,49 +73,64 @@ public class Client : TcpEngine
 
         foreach (object o in playerDatas.Values)
         {
-            PlayerData p = (PlayerData)o;
+            PlayerDataOriginal p = (PlayerDataOriginal)o;
             if (maxValue < p.kills) maxValue = p.kills;
         }
 
         bool lead = kills>maxValue;
 
-        if (hasTheLead != lead && GameObject.Find("/Player"))
+        GameObject playerObject = GameObject.Find("/Player");
+        if (hasTheLead != lead && playerObject != null)
         {
-            GameObject.Find("/Player").SendMessage("HasTheLead", lead);
-            hasTheLead = lead;
+            playerObject.SendMessage("HasTheLead", lead);
         }
+
+        hasTheLead = lead;
             
     }
 
     // Hide / Show stats
     void ToggleStats(bool show)
     {
-         statsCanvas.transform.GetChild(0).gameObject.SetActive(show);     
+        if (statsCanvas != null && statsCanvas.transform.childCount > 0)
+            statsCanvas.transform.GetChild(0).gameObject.SetActive(show);
     }
 
     // Hide / show chat
     void ToggleChat()
     {
+        if (log == null) return;
+
         if (!log.chatActive)
         {
             log.ToggleChat(true);
 
-            if (GameObject.Find("/Player"))
+            GameObject playerObject = GameObject.Find("/Player");
+            if (playerObject != null)
             {
-                GameObject p = GameObject.Find("/Player");
-                p.GetComponent<PlayerInput>().enabled = false; // Stop inputs
-                p.GetComponent<PlayerMotor>().Move(0f, 0f); // Stop player
-                p.GetComponent<PlayerMotor>().MouseLook(0f, 0f);
+                PlayerInput playerInput = playerObject.GetComponent<PlayerInput>();
+                if (playerInput != null) playerInput.enabled = false;
+
+                PlayerMotor playerMotor = playerObject.GetComponent<PlayerMotor>();
+                if (playerMotor != null)
+                {
+                    playerMotor.Move(0f, 0f);
+                    playerMotor.MouseLook(0f, 0f);
+                }
             }
         }
         else
         {
             log.ToggleChat(false);
-            if (GameObject.Find("/Player")) {
-                if(!GameObject.Find("/Player").GetComponent<PlayerManager>().gamePaused)
-                GameObject.Find("/Player").GetComponent<PlayerInput>().enabled = true;
-                //Cursor.visible = false;
-                //Cursor.lockState = CursorLockMode.Locked;
+            GameObject playerObject = GameObject.Find("/Player");
+            if (playerObject != null)
+            {
+                PlayerManager playerManager = playerObject.GetComponent<PlayerManager>();
+                PlayerInput playerInput = playerObject.GetComponent<PlayerInput>();
+                if (playerManager != null && playerInput != null && !playerManager.gamePaused)
+                {
+                    playerInput.enabled = true;
+                }
             }
             
         }
@@ -121,13 +141,16 @@ public class Client : TcpEngine
     {
         if (newLocalPlayer != null) player = newLocalPlayer;
         else player = fakeLocalPlayer;
-        
-        playerCamera = player.GetChild(0);
+
+        if (player != null && player.childCount > 0) playerCamera = player.GetChild(0);
+        else playerCamera = null;
     }
 
     // Send chat message to everyone
     void SendChatMessage(string message)
     {
+        if (!IsConnected()) return;
+
         ByteBuffer buffer = new ByteBuffer();
         buffer.Put((byte)2);
         buffer.Put(4); // put int
@@ -138,6 +161,8 @@ public class Client : TcpEngine
     // Send information when local player dies
     internal void LocalPlayerDied(int killerID, int criticalCode)
     {
+        if (!IsConnected()) return;
+
         ByteBuffer buffer = new ByteBuffer();
         buffer.Put((byte)2);
         buffer.Put(3); // put int
@@ -149,6 +174,8 @@ public class Client : TcpEngine
     // Send damage caused to other players
     internal void DamageDealedTo(int receiverID, float amount, int criticalCode, Vector3 sourcePos)
     {
+        if (!IsConnected()) return;
+
         //send to network
         ByteBuffer buffer = new ByteBuffer();
         buffer.Put((byte)2);
@@ -165,6 +192,8 @@ public class Client : TcpEngine
     // send weapon swap to network
     void LocalPlayerChangedToWeapon(int weaponId)
     {   
+        if (!IsConnected()) return;
+
         ByteBuffer buffer = new ByteBuffer();
         buffer.Put((byte)2);
         buffer.Put(0); // put int
@@ -181,6 +210,8 @@ public class Client : TcpEngine
 
     void DetonateFinalWord()
     {
+        if (globalResources == null) return;
+
         //detonate id is weapons lenght + 1
         int wid = globalResources.weapons.Count+1;
         LocalPlayerChangedToWeapon(wid);
@@ -189,6 +220,8 @@ public class Client : TcpEngine
     // Send primary fire to network
     void LocalPlayerFiredWeapon()
     {      
+        if (!IsConnected()) return;
+
         ByteBuffer buffer = new ByteBuffer();
         buffer.Put((byte)2);
         buffer.Put(1); // put int
@@ -198,13 +231,19 @@ public class Client : TcpEngine
     // Spawn client to the game
     public void LocalPlayerSpawn()
     {
-        ByteBuffer buffer = new ByteBuffer();
-        buffer.Put((byte)2);
-        buffer.Put(2); // put int
-        Send(buffer.Trim().Get());
+        // Send spawn packet to server if connected (optional — offline play still works)
+        if (IsConnected())
+        {
+            ByteBuffer buffer = new ByteBuffer();
+            buffer.Put((byte)2);
+            buffer.Put(2); // put int
+            Send(buffer.Trim().Get());
+        }
 
-        // player obj
-        if (GameObject.Find("/Dead Player")) Destroy(GameObject.Find("/Dead Player"));
+        // Always create player locally (camera is on the player prefab)
+        GameObject deadPlayer = GameObject.Find("/Dead Player");
+        if (deadPlayer != null) Destroy(deadPlayer);
+        if (spawnPoints == null || spawnPoints.Length <= 1) return;
         int randomSpawn = UnityEngine.Random.Range(1,spawnPoints.Length);//dont include [0]
         GameObject pClone = Instantiate(localPlayerClone,spawnPoints[randomSpawn].position,spawnPoints[randomSpawn].rotation);
         pClone.name = "Player";
@@ -216,6 +255,8 @@ public class Client : TcpEngine
     // Send equipped appereances to network
     void SendAppereances()
     {
+        if (!IsConnected() || globalResources == null) return;
+
         List<GameObject> a = globalResources.appereances;
 
         int holo = a.IndexOf(Resources.Load(PlayerPrefs.GetString("equipped_holo"), typeof(GameObject)) as GameObject);
@@ -258,7 +299,7 @@ public class Client : TcpEngine
     // Update is called once per frame
     void Update()
     {
-        if (!isHandshaking)
+        if (!isHandshaking && player != null && playerCamera != null && IsConnected())
         {
             playerPos = player.position;
             playerRot = player.rotation.eulerAngles;
@@ -293,8 +334,15 @@ public class Client : TcpEngine
         ToggleStats(Input.GetKey(KeyCode.Tab));
 
         // Toggle chat
-        if (Input.GetKeyDown("return")) { if (log.chatActive) log.ChatEditEnd(); ToggleChat(); }
-        if (Input.GetKeyDown(KeyCode.Escape)) { if (log.chatActive) ToggleChat();}
+        if (Input.GetKeyDown("return"))
+        {
+            if (log != null && log.chatActive) log.ChatEditEnd();
+            ToggleChat();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (log != null && log.chatActive) ToggleChat();
+        }
     }
 
     public override void Packet(byte[] data)
@@ -328,7 +376,7 @@ public class Client : TcpEngine
 
                     ByteBuffer z = sendBuffer.Trim();
 
-                    Send(z.Get());
+                    if (IsConnected()) Send(z.Get());
 
                     int playerCount = buffer.GetInt();
 
@@ -410,7 +458,7 @@ public class Client : TcpEngine
 
             if (pid != id)
             {
-                PlayerData pData = (PlayerData)playerDatas[pid];
+                PlayerDataOriginal pData = (PlayerDataOriginal)playerDatas[pid];
                 if (pData != null) {
                     pData.position = new Vector3(buffer.GetFloat(), buffer.GetFloat(), buffer.GetFloat());
                     pData.rotation = new Vector3(buffer.GetFloat(), buffer.GetFloat(), buffer.GetFloat());
@@ -452,7 +500,7 @@ public class Client : TcpEngine
     // Network player joined
     internal void PlayerJoined(int playerID, string playerName)
     {
-        playerDatas.Add(playerID, new PlayerData(playerName));
+        playerDatas.Add(playerID, new PlayerDataOriginal(playerName));
 
         RunOnMainThread.Enqueue(() =>{
             NetworkPlayer clone = Instantiate(playerClone);
@@ -465,7 +513,7 @@ public class Client : TcpEngine
     internal void PlayerLeft(int playerID)
     {
         //Debug.Log("leaved player: " + playerID);
-        ((PlayerData)playerDatas[playerID]).destroy = true;
+        ((PlayerDataOriginal)playerDatas[playerID]).destroy = true;
         playerDatas.Remove(playerID);
     }
 
@@ -476,8 +524,8 @@ public class Client : TcpEngine
         if (weaponID == globalResources.weapons.Count + 1 && playerID != id) PlayerDetonatedFinalWord(playerID);
         else
         {
-            ((PlayerData)playerDatas[playerID]).weapon = weaponID;
-            ((PlayerData)playerDatas[playerID]).weaponChanged = true;
+            ((PlayerDataOriginal)playerDatas[playerID]).weapon = weaponID;
+            ((PlayerDataOriginal)playerDatas[playerID]).weaponChanged = true;
         }
         // lead
         RunOnMainThread.Enqueue(() => {          
@@ -488,7 +536,7 @@ public class Client : TcpEngine
     // Network player fires weapon
     internal void PlayerFireWeapon(int playerID)
     {
-        ((PlayerData)playerDatas[playerID]).pendingPrimaryFire = true;
+        ((PlayerDataOriginal)playerDatas[playerID]).pendingPrimaryFire = true;
     }
 
     // Receive chat messages
@@ -509,20 +557,20 @@ public class Client : TcpEngine
     void PlayerCrouch(int playerId, byte value)
     {
         if (playerId == id) return; // self
-        ((PlayerData)playerDatas[playerId]).crouch = Convert.ToBoolean(value);
+        ((PlayerDataOriginal)playerDatas[playerId]).crouch = Convert.ToBoolean(value);
     }
 
     void PlayerDetonatedFinalWord(int playerId)
     {
         if (playerId == id) return; // self
-        ((PlayerData)playerDatas[playerId]).pendingFinalWord = true;
+        ((PlayerDataOriginal)playerDatas[playerId]).pendingFinalWord = true;
     }
 
     // Network player dies
     internal void PlayerDied(int killedID, int killerID, int criticalCode)
     {
         // kill network players
-        if (killedID != id) ((PlayerData)playerDatas[killedID]).die = true;
+        if (killedID != id) ((PlayerDataOriginal)playerDatas[killedID]).die = true;
 
         RunOnMainThread.Enqueue(() => {
             // Get critical type
@@ -539,27 +587,32 @@ public class Client : TcpEngine
 
                 // stats
                 if (killedID == id) { deaths++; kills--; }
-                else { ((PlayerData)playerDatas[killedID]).deaths++; ((PlayerData)playerDatas[killedID]).kills--; }
+                else { ((PlayerDataOriginal)playerDatas[killedID]).deaths++; ((PlayerDataOriginal)playerDatas[killedID]).kills--; }
             }
             else // kills
             {
                 //data
-                if (killedID != id) ((PlayerData)playerDatas[killedID]).lastKiller=killerID;
+                if (killedID != id) ((PlayerDataOriginal)playerDatas[killedID]).lastKiller=killerID;
 
                 // log
                 log.LogMessage((killerID == id) ? localName : GetLatestDatas(killerID).name, " " + criticalType + " ",(killedID == id) ? localName : GetLatestDatas(killedID).name, false, false);
 
                 // stats kills
                 if (killerID == id) kills++;
-                else ((PlayerData)playerDatas[killerID]).kills++;
+                else ((PlayerDataOriginal)playerDatas[killerID]).kills++;
 
                 //stats deaths
                 if (killedID == id) deaths++;
-                else ((PlayerData)playerDatas[killedID]).deaths++;
+                else ((PlayerDataOriginal)playerDatas[killedID]).deaths++;
             }
             
             // Add my kills
-            if (killerID == id && isAlive) GameObject.Find("/Player").GetComponent<PlayerManager>().GotKill(killedID, criticalCode);
+            if (killerID == id && isAlive)
+            {
+                GameObject playerObject = GameObject.Find("/Player");
+                PlayerManager playerManager = playerObject != null ? playerObject.GetComponent<PlayerManager>() : null;
+                if (playerManager != null) playerManager.GotKill(killedID, criticalCode);
+            }
 
         });  
     }
@@ -571,7 +624,9 @@ public class Client : TcpEngine
         {
             //Debug.Log("client "+dealerID+" dealed you "+amount+" damage");
             RunOnMainThread.Enqueue(() => {
-                GameObject.Find("/Player").GetComponent<PlayerManager>().TakeDamage(amount, sourcePos, criticalCode, dealerID);
+                GameObject playerObject = GameObject.Find("/Player");
+                PlayerManager playerManager = playerObject != null ? playerObject.GetComponent<PlayerManager>() : null;
+                if (playerManager != null) playerManager.TakeDamage(amount, sourcePos, criticalCode, dealerID);
             });
         }       
     }
@@ -584,7 +639,7 @@ public class Client : TcpEngine
         //print(playerID+", "+ holo + ", " + head + ", " + face + ", " + gloves + ", " + upperbody + ", " + lowerbody + ", " + boots);
 
         // save to playerdata
-        PlayerData pd  = ((PlayerData) playerDatas[playerID]);
+        PlayerDataOriginal pd  = ((PlayerDataOriginal) playerDatas[playerID]);
         pd.holo = holo;
         pd.head = head;
         pd.face = face;
@@ -599,8 +654,8 @@ public class Client : TcpEngine
     // init player stats if join during the game
     void InitPlayerStats(int pID, int kills, int deaths)
     {
-        ((PlayerData)playerDatas[pID]).kills = kills;
-        ((PlayerData)playerDatas[pID]).deaths = deaths;
+        ((PlayerDataOriginal)playerDatas[pID]).kills = kills;
+        ((PlayerDataOriginal)playerDatas[pID]).deaths = deaths;
     }
 
     // Close connection and disable this client gameObject
@@ -612,13 +667,13 @@ public class Client : TcpEngine
     }
 
     // This is called every frame by every NetworkPlayer
-    public PlayerData GetLatestDatas(int networkId)
+    public PlayerDataOriginal GetLatestDatas(int networkId)
     {
         foreach (object i in playerDatas.Keys)
         {
             if (((int)i) == networkId)
             {
-                return (PlayerData)playerDatas[i];
+                return (PlayerDataOriginal)playerDatas[i];
             }
         }
 

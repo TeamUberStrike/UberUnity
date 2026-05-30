@@ -42,14 +42,19 @@ public class ShopKeeper : MonoBehaviour
     void Start()
     {
         // get global resources
-        GlobalResources r = GameObject.Find("/Global Resources").GetComponent<GlobalResources>();
-        weaponPrefabs = r.weapons.ToArray();
-        appereancePrefabs = r.appereances.ToArray();
+        GameObject globalResourcesObject = GameObject.Find("/Global Resources");
+        GlobalResources r = globalResourcesObject != null ? globalResourcesObject.GetComponent<GlobalResources>() : null;
+        if (r != null)
+        {
+            weaponPrefabs = r.weapons.ToArray();
+            appereancePrefabs = r.appereances.ToArray();
+        }
 
         InitItemSlots();
         audioSource = transform.parent.gameObject.GetComponent<AudioSource>();
-        playerAvatar = GameObject.Find("/Player Avatar").GetComponent<PlayerAvatar>();
-        UpdateAvatar();
+        GameObject playerAvatarObject = GameObject.Find("/Player Avatar");
+        if (playerAvatarObject != null) playerAvatar = playerAvatarObject.GetComponent<PlayerAvatar>();
+        if (playerAvatar != null) UpdateAvatar();
     }
 
     // show only appereances of one class
@@ -144,7 +149,7 @@ public class ShopKeeper : MonoBehaviour
 
         // show right tab for draggable item
         // for springs
-        if (prefab.GetComponent<QuickItem>() != null)
+        if (prefab.GetComponent<QuickItemOriginal>() != null)
         {
             transform.parent.gameObject.GetComponent<TopBarUI>().LoadoutTabs(2);
         }
@@ -204,7 +209,7 @@ public class ShopKeeper : MonoBehaviour
         if (mouseOnSlot && availableSlots.Contains(mouseOnSlot))
         {
             // Equip items
-            if (prefabInDrag.GetComponent<QuickItem>() != null)
+            if (prefabInDrag.GetComponent<QuickItemOriginal>() != null)
             {
                 audioSource.PlayOneShot(equipSoundQuickitem);
             }
@@ -271,9 +276,9 @@ public class ShopKeeper : MonoBehaviour
         }
 
         // in case if spring
-        else if (prefab.GetComponent<QuickItem>() != null)
+        else if (prefab.GetComponent<QuickItemOriginal>() != null)
         {
-            return prefab.GetComponent<QuickItem>().itemName;
+            return prefab.GetComponent<QuickItemOriginal>().itemName;
         }
         // in case of cloth
         else if (prefab.GetComponent<Appereance>() != null)
@@ -291,9 +296,9 @@ public class ShopKeeper : MonoBehaviour
             return prefab.GetComponent<Weapon>().GetType().ToString();
         }
         // in case of spring
-        else if (prefab.GetComponent<QuickItem>() != null)
+        else if (prefab.GetComponent<QuickItemOriginal>() != null)
         {
-            return prefab.GetComponent<QuickItem>().type;
+            return prefab.GetComponent<QuickItemOriginal>().type;
         }
         // in case of cloth
         else if (prefab.GetComponent<Appereance>() != null)
@@ -313,9 +318,9 @@ public class ShopKeeper : MonoBehaviour
         }
 
         // in case if spring
-        else if (prefab.GetComponent<QuickItem>() != null)
+        else if (prefab.GetComponent<QuickItemOriginal>() != null)
         {
-            return prefab.GetComponent<QuickItem>().thumbnail;
+            return prefab.GetComponent<QuickItemOriginal>().thumbnail;
         }
         // in case of cloth
         else if (prefab.GetComponent<Appereance>() != null)
@@ -435,10 +440,13 @@ public class ShopKeeper : MonoBehaviour
         {           
             if (GameObject.Find("/MenuSystem"))
             {
+                if (playerAvatar == null) return;
                 playerAvatar.gameObject.SetActive(false);
                 GameObject clonePlayer = Instantiate(player);
                 clonePlayer.name = "Player";
-                GameObject.Find("/Environment").GetComponent<AudioSource>().volume = 0f;
+                GameObject environmentObject = GameObject.Find("/Environment");
+                AudioSource environmentAudio = environmentObject != null ? environmentObject.GetComponent<AudioSource>() : null;
+                if (environmentAudio != null) environmentAudio.volume = 0f;
                 GameObject.Find("/MenuSystem").SetActive(false);
                 
             }

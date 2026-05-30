@@ -11,6 +11,10 @@ public class JumpPad : MonoBehaviour
     public bool isAccel = false;
     public float accelMultiply = 5f;
 
+    [Tooltip("Multiplier applied to forceDirection before sending to PlayerMotor. " +
+             "Sends final velocity directly — no extra modifier applied by PlayerMotor.")]
+    public float forceMultiplier = 10f;
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -20,9 +24,15 @@ public class JumpPad : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            if (isAccel) other.gameObject.SendMessage("PowerUp",(transform.forward*accelMultiply)+new Vector3(0f,forceDirection.y,0f));
-            else other.gameObject.SendMessage("PowerUp", forceDirection);
-            audioSource.Play(0);
+            Vector3 finalVelocity;
+            if (isAccel)
+                finalVelocity = (transform.forward * accelMultiply + new Vector3(0f, forceDirection.y, 0f)) * forceMultiplier;
+            else
+                finalVelocity = forceDirection * forceMultiplier;
+
+            // PowerUp receives final velocity — sets it directly
+            other.gameObject.SendMessage("PowerUp", finalVelocity);
+            if (audioSource != null) audioSource.Play(0);
         }
     }
 
