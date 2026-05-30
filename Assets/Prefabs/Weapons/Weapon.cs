@@ -296,10 +296,12 @@ public class Weapon : MonoBehaviour
     // same with sound option
     public void BulletTrail(Transform pos, Vector3 targetPoint, bool hasSound)
     {
+        if (bulletTrail == null) return;
         Transform clonet = Instantiate(bulletTrail, pos.position, pos.rotation);
         clonet.LookAt(targetPoint);
-        clonet.gameObject.GetComponent<BulletTrail>().sound = hasSound;
-        Destroy(clonet.gameObject, 1f);       
+        var trail = clonet.gameObject.GetComponent<BulletTrailOriginal>();
+        if (trail != null) trail.sound = hasSound;
+        Destroy(clonet.gameObject, 1f);
     }
 
     //custom narrator

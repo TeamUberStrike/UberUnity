@@ -112,12 +112,17 @@ public class CannonBullet : MonoBehaviour
                     transform.position,
                     -1, -1);
 
-                // Jump
+                // Rocket jump — use ApplyExplosionForce (additive, doesn't replace velocity)
+                // Direction: away from explosion, scaled by selfJumpPower
                 float dist = Vector3.Distance(hitColliders[i].transform.position, transform.position);
-
-                if(dist<2) hitColliders[i].SendMessage("PowerUp", Vector3.Normalize((hitColliders[i].transform.position - transform.position)) * selfJumpPower);
-
-                hitColliders[i].SendMessage("SetCanUsePowerUp", true);
+                if (dist < smallDmgRadius)
+                {
+                    Vector3 blastDir = (hitColliders[i].transform.position - transform.position).normalized;
+                    // Scale force by proximity (closer = stronger) and selfJumpPower
+                    float proximityScale = 1f - (dist / smallDmgRadius);
+                    Vector3 rocketForce = blastDir * selfJumpPower * proximityScale * 12f;
+                    hitColliders[i].SendMessage("ApplyExplosionForce", rocketForce, SendMessageOptions.DontRequireReceiver);
+                }
             }
 
             i++;

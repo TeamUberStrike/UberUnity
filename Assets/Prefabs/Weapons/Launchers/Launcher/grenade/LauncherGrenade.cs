@@ -109,13 +109,19 @@ public class LauncherGrenade : MonoBehaviour
                 // Send damage
                 if (GameObject.Find("/Player"))
                     GameObject.Find("/Player").GetComponent<PlayerManager>().TakeDamage(
-                    Mathf.Floor(GetDmg(Vector3.Distance(hitColliders[i].transform.position, transform.position)) / reduceDmgToSelfBy), 
-                    transform.position, 
+                    Mathf.Floor(GetDmg(Vector3.Distance(hitColliders[i].transform.position, transform.position)) / reduceDmgToSelfBy),
+                    transform.position,
                     -1,-1);
-                
-                // Jump
-                hitColliders[i].SendMessage("PowerUp", (hitColliders[i].transform.position - transform.position) / 2 * selfJumpPower);
-                hitColliders[i].SendMessage("SetCanUsePowerUp", true);
+
+                // Rocket jump — use ApplyExplosionForce (additive, doesn't replace velocity)
+                float dist = Vector3.Distance(hitColliders[i].transform.position, transform.position);
+                if (dist < smallDmgRadius)
+                {
+                    Vector3 blastDir = (hitColliders[i].transform.position - transform.position).normalized;
+                    float proximityScale = 1f - (dist / smallDmgRadius);
+                    Vector3 rocketForce = blastDir * selfJumpPower * proximityScale * 12f;
+                    hitColliders[i].SendMessage("ApplyExplosionForce", rocketForce, SendMessageOptions.DontRequireReceiver);
+                }
 
             }
 

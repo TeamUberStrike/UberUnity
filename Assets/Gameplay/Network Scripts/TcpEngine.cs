@@ -12,6 +12,11 @@ public class TcpEngine : MonoBehaviour
     private string tcpHost;
     private int tcpPort;
 
+    protected bool IsConnected()
+    {
+        return client != null && client.Connected;
+    }
+
     internal bool ConnectBlocking(string host, int port)
     {
         try
@@ -39,17 +44,17 @@ public class TcpEngine : MonoBehaviour
     }
     private void connect()
     {
-        /*try
-        {*/
-        client = new TcpClient();
-        client.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Parse(tcpHost), tcpPort));
-        ConnectionResolve(true);
-      /*  }
-    
-        catch //(Exception ex)
+        try
         {
+            client = new TcpClient();
+            client.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Parse(tcpHost), tcpPort));
+            ConnectionResolve(true);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("TCP connect failed: " + ex.Message);
             ConnectionResolve(false);
-        }*/
+        }
     }
 
 
@@ -80,8 +85,16 @@ public class TcpEngine : MonoBehaviour
     {
         if (client != null)
         {
-            client.GetStream().Close();
-            client.Close();
+            try
+            {
+                if (client.Connected)
+                    client.GetStream().Close();
+                client.Close();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("TCP disconnect: " + ex.Message);
+            }
             print("Disconnected");
         }
     }
@@ -103,27 +116,21 @@ public class TcpEngine : MonoBehaviour
 
     internal void Send(byte[] data)
     {
-
-        if (client == null)
+        if (!IsConnected())
         {
             return;
         }
-        else
+        try
         {
-            try
+            NetworkStream ns = client.GetStream();
+            if (ns.CanWrite)
             {
-                NetworkStream ns = client.GetStream();
-
-                if (ns.CanWrite)
-                {
-                    ns.Write(data, 0, data.Length);
-                }
-
+                ns.Write(data, 0, data.Length);
             }
-            catch (SocketException se)
-            {
-                Debug.LogError("SE:" + se);
-            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("TCP send failed: " + ex.Message);
         }
     }
 

@@ -95,9 +95,15 @@ public class StickyMine : MonoBehaviour
                     transform.position,
                     -1, -1);
 
-                // Jump
-                hitColliders[i].SendMessage("PowerUp", (hitColliders[i].transform.position - transform.position) / 2 * selfJumpPower);
-                hitColliders[i].SendMessage("SetCanUsePowerUp", true);
+                // Explosion jump — additive force
+                float dist = Vector3.Distance(hitColliders[i].transform.position, transform.position);
+                if (dist < smallDmgRadius)
+                {
+                    Vector3 blastDir = (hitColliders[i].transform.position - transform.position).normalized;
+                    float proximityScale = 1f - (dist / smallDmgRadius);
+                    Vector3 rocketForce = blastDir * selfJumpPower * proximityScale * 12f;
+                    hitColliders[i].SendMessage("ApplyExplosionForce", rocketForce, SendMessageOptions.DontRequireReceiver);
+                }
             }
 
             i++;

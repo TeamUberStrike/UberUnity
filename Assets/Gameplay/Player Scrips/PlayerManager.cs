@@ -35,22 +35,39 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         inTheMenus = SceneManager.GetActiveScene().name == "MainMenu";
-        if(!inTheMenus)respawnUI = GameObject.Find("/MenuSystem/Respawn UI").transform.GetChild(0).gameObject;
+        if (!inTheMenus)
+        {
+            var respawnUiRoot = GameObject.Find("/MenuSystem/Respawn UI");
+            if (respawnUiRoot != null && respawnUiRoot.transform.childCount > 0)
+            {
+                respawnUI = respawnUiRoot.transform.GetChild(0).gameObject;
+            }
+        }
 
         playerUI = GetComponent<PlayerUI>();
         playerAudio = GetComponent<PlayerAudio>();
-        if ((Resources.Load(PlayerPrefs.GetString("equipped_primary_quickitem"), typeof(GameObject)) as GameObject) != null)
+        var primaryPrefab = Resources.Load(PlayerPrefs.GetString("equipped_primary_quickitem"), typeof(GameObject)) as GameObject;
+        if (primaryPrefab != null)
         {
-            float ff = (Resources.Load(PlayerPrefs.GetString("equipped_primary_quickitem"), typeof(GameObject)) as GameObject).GetComponent<QuickItem>().stockCount;
-            playerUI.UpdateItemCount(0, ff, false);
-            primaryItems = ff;
+            var primaryQuickItem = primaryPrefab.GetComponent<QuickItemOriginal>();
+            if (primaryQuickItem != null)
+            {
+                float ff = primaryQuickItem.stockCount;
+                playerUI.UpdateItemCount(0, ff, false);
+                primaryItems = ff;
+            }
         }
-        
-        if ((Resources.Load(PlayerPrefs.GetString("equipped_secondary_quickitem"), typeof(GameObject)) as GameObject) != null)
+
+        var secondaryPrefab = Resources.Load(PlayerPrefs.GetString("equipped_secondary_quickitem"), typeof(GameObject)) as GameObject;
+        if (secondaryPrefab != null)
         {
-            float f = (Resources.Load(PlayerPrefs.GetString("equipped_secondary_quickitem"), typeof(GameObject)) as GameObject).GetComponent<QuickItem>().stockCount;
-            playerUI.UpdateItemCount(1, f, false);
-            secondaryItems = f;
+            var secondaryQuickItem = secondaryPrefab.GetComponent<QuickItemOriginal>();
+            if (secondaryQuickItem != null)
+            {
+                float f = secondaryQuickItem.stockCount;
+                playerUI.UpdateItemCount(1, f, false);
+                secondaryItems = f;
+            }
         }
         
         playerHand = playerUI.playerHand;
@@ -58,12 +75,19 @@ public class PlayerManager : MonoBehaviour
         SetDefaultValues();
 
         // Skybox
-        if(GameObject.Find("/Environment").GetComponent<Environment>().skybox!=null)RenderSettings.skybox = GameObject.Find("/Environment").GetComponent<Environment>().skybox;
+        var envObj = GameObject.Find("/Environment");
+        var environment = envObj != null ? envObj.GetComponent<Environment>() : null;
+        if (environment != null && environment.skybox != null)
+            RenderSettings.skybox = environment.skybox;
 
-        if (GameObject.Find("/Network Client"))
+        var networkClientObject = GameObject.Find("/Network Client");
+        if (networkClientObject != null)
         {
-            client = GameObject.Find("/Network Client").GetComponent<Client>();
-            client.AssignLocalPlayer(transform);
+            client = networkClientObject.GetComponent<Client>();
+            if (client != null)
+            {
+                client.AssignLocalPlayer(transform);
+            }
         }
 
     }
@@ -80,7 +104,10 @@ public class PlayerManager : MonoBehaviour
 
     public void GotKill(int killedID, int criticalCode)
     {
-        playerUI.ShowKillName("You killed "+ client.GetLatestDatas(killedID).name);
+        if (playerUI == null || playerAudio == null || client == null) return;
+
+        PlayerDataOriginal killedPlayer = client.GetLatestDatas(killedID);
+        playerUI.ShowKillName("You killed " + ((killedPlayer != null) ? killedPlayer.name : "Unknown"));
 
         killCombo++;
         if (killCombo > 6) killCombo = 6;
@@ -115,6 +142,12 @@ public class PlayerManager : MonoBehaviour
     internal void Die(int dealerPlayerID, int criticalCode)
     {
         if (inTheMenus) { PauseGame(); return; }
+        if (client == null)
+        {
+            Debug.LogWarning("PlayerManager.Die skipped network death handling because no Client was found.");
+            PauseGame();
+            return;
+        }
         if (!client.isAlive) return;
         client.isAlive = false;
         deaths++;
@@ -128,11 +161,12 @@ public class PlayerManager : MonoBehaviour
         //cause messages
         client.LocalPlayerDied(dealerPlayerID, criticalCode); // to others
         string causeMsg = ""; // self
+        PlayerDataOriginal dealerData = dealerPlayerID >= 0 ? client.GetLatestDatas(dealerPlayerID) : null;
         if (dealerPlayerID < 0) causeMsg = "Congratulations, you killed yourself.";
-        else if (criticalCode == 0) causeMsg = "Killed by " + client.GetLatestDatas(dealerPlayerID).name;
-        else if (criticalCode == 1) causeMsg = "Headshot from " + client.GetLatestDatas(dealerPlayerID).name;
-        else if (criticalCode == 2) causeMsg = "Nutshot from " + client.GetLatestDatas(dealerPlayerID).name;
-        else if (criticalCode == 3) causeMsg = "Smackdown from " + client.GetLatestDatas(dealerPlayerID).name;
+        else if (criticalCode == 0) causeMsg = "Killed by " + ((dealerData != null) ? dealerData.name : "Unknown");
+        else if (criticalCode == 1) causeMsg = "Headshot from " + ((dealerData != null) ? dealerData.name : "Unknown");
+        else if (criticalCode == 2) causeMsg = "Nutshot from " + ((dealerData != null) ? dealerData.name : "Unknown");
+        else if (criticalCode == 3) causeMsg = "Smackdown from " + ((dealerData != null) ? dealerData.name : "Unknown");
 
         playerUI.ShowKillName("");
 
@@ -142,16 +176,35 @@ public class PlayerManager : MonoBehaviour
         CustomNarrator("Die");
 
         // hide pause 
-        GameObject.Find("/MenuSystem/Pause UI").transform.GetChild(0).gameObject.SetActive(false);
+        GameObject pauseUi = GameObject.Find("/MenuSystem/Pause UI");
+        if (pauseUi != null && pauseUi.transform.childCount > 0)
+        {
+            pauseUi.transform.GetChild(0).gameObject.SetActive(false);
+        }
 
         client.AssignLocalPlayer(null);
-        respawnUI.SetActive(true);
-        respawnUI.SendMessage("SetDeathCause", causeMsg);
+        if (respawnUI != null)
+        {
+            respawnUI.SetActive(true);
+            respawnUI.SendMessage("SetDeathCause", causeMsg);
+        }
 
         GameObject death = Instantiate(deathViewPrefab, transform.position, transform.rotation);
         death.SendMessage("SetWeapon", client.localWeaponId);     
-        if(dealerPlayerID>0) death.SendMessage("SetKiller", client.GetLatestDatas(dealerPlayerID).playerObject);
-        death.SendMessage("StartVelocity",GetComponent<Rigidbody>().linearVelocity);
+        if (dealerPlayerID > 0)
+        {
+            PlayerDataOriginal killerData = client.GetLatestDatas(dealerPlayerID);
+            if (killerData != null && killerData.playerObject != null)
+            {
+                death.SendMessage("SetKiller", killerData.playerObject);
+            }
+        }
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            death.SendMessage("StartVelocity", rb.linearVelocity);
+        }
 
 
         Destroy(gameObject);
@@ -330,9 +383,15 @@ public class PlayerManager : MonoBehaviour
 
     internal void PauseGame()
     {
-        GetComponent<PlayerInput>().enabled = false; // Stop inputs
-        GetComponent<PlayerMotor>().Move(0f, 0f); // Stop player
-        GetComponent<PlayerMotor>().MouseLook(0f, 0f);
+        PlayerInput playerInput = GetComponent<PlayerInput>();
+        if (playerInput != null) playerInput.enabled = false; // Stop inputs
+
+        PlayerMotor playerMotor = GetComponent<PlayerMotor>();
+        if (playerMotor != null)
+        {
+            playerMotor.Move(0f, 0f); // Stop player
+            playerMotor.MouseLook(0f, 0f);
+        }
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -344,14 +403,22 @@ public class PlayerManager : MonoBehaviour
             foreach(GameObject g in rootObjs)
             {
                 if (g.name == "Player Avatar" || g.name == "MenuSystem") g.SetActive(true);
-                if(g.name == "Environment") g.GetComponent<AudioSource>().volume = 1f;
+                if (g.name == "Environment")
+                {
+                    AudioSource environmentAudio = g.GetComponent<AudioSource>();
+                    if (environmentAudio != null) environmentAudio.volume = 1f;
+                }
             }
 
             Destroy(gameObject);
 
             //shop tab
-            GameObject.Find("/MenuSystem/Top Bar UI").SendMessage("NavigationBar", 3);
-            GameObject.Find("/MenuSystem/Top Bar UI").SendMessage("NavigationBar", 2);
+            GameObject topBarUi = GameObject.Find("/MenuSystem/Top Bar UI");
+            if (topBarUi != null)
+            {
+                topBarUi.SendMessage("NavigationBar", 3);
+                topBarUi.SendMessage("NavigationBar", 2);
+            }
         }
         // Other maps
         else
@@ -359,13 +426,21 @@ public class PlayerManager : MonoBehaviour
             playerUI.TogglePauseScreen(true);
             gamePaused = true;
 
-            GameObject g = GameObject.Find("/MenuSystem").transform.GetChild(0).gameObject;          
-            g.SetActive(true); 
+            GameObject menuSystem = GameObject.Find("/MenuSystem");
+            if (menuSystem != null && menuSystem.transform.childCount > 0)
+            {
+                GameObject g = menuSystem.transform.GetChild(0).gameObject;
+                g.SetActive(true);
+            }
 
         }
 
-        if (GameObject.Find("/Player"))
-            GameObject.Find("/Player").GetComponent<PlayerMotor>().movement = Vector3.zero;
+        GameObject player = GameObject.Find("/Player");
+        if (player != null)
+        {
+            PlayerMotor localPlayerMotor = player.GetComponent<PlayerMotor>();
+            if (localPlayerMotor != null) localPlayerMotor.movement = Vector3.zero;
+        }
     }
 
     // call after game is paused
@@ -375,8 +450,11 @@ public class PlayerManager : MonoBehaviour
         Cursor.visible = false;
         playerUI.TogglePauseScreen(false);
         gamePaused = false;
-        GetComponent<PlayerInput>().enabled = true;
-        GetComponent<PlayerMotor>().UpdateOptions();
+        PlayerInput playerInput = GetComponent<PlayerInput>();
+        if (playerInput != null) playerInput.enabled = true;
+
+        PlayerMotor playerMotor = GetComponent<PlayerMotor>();
+        if (playerMotor != null) playerMotor.UpdateOptions();
     }
 
     // Pass weapon pickup to hand
