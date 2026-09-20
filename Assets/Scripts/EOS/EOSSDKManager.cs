@@ -3,24 +3,14 @@ using Epic.OnlineServices.Platform;
 using System;
 using UnityEngine;
 
-class EOSSDKManager : MonoBehaviour
+public class EOSSDKManager : MonoBehaviour
 {
-    static private PlatformInterface s_eosPlatformInterface;
+    private static PlatformInterface s_eosPlatformInterface;
 
+    private static EOSSDKManager instance;
     public PlatformInterface GetEOSPlatformInterface()
     {
-        #if UNITY_EDITOR
-            return s_eosPlatformInterface;
-        #else
-            if (s_eosPlatformInterface == null) 
-            {
-                if (EOS_GetPlatformInterface() == IntPtr.Zero)
-                {
-                    throw new Exception("The native code returned a NULL EOS Platform. The issue is likely in the GFX plugin.");
-                }
-                SetEOSPlatformInterface(new Epic.OnlineServices.Platform.PlatformInterface(EOS_GetPlatformInterface()));
-            }
-        #endif
+        return s_eosPlatformInterface;
     }
     private Epic.OnlineServices.Result InitializePlatformInterface()
     {
@@ -29,9 +19,9 @@ class EOSSDKManager : MonoBehaviour
             ProductName = "UberUnityClient",
             ProductVersion = "1.0",
 
-            AllocateMemoryFunction = IntPtr.Zero,
-            ReallocateMemoryFunction = IntPtr.Zero,
-            ReleaseMemoryFunction = IntPtr.Zero
+            //AllocateMemoryFunction = IntPtr.Zero,
+            //ReallocateMemoryFunction = IntPtr.Zero,
+            //ReleaseMemoryFunction = IntPtr.Zero
         };
 
         var overrideThreadAffinity = new InitializeThreadAffinity
@@ -43,30 +33,49 @@ class EOSSDKManager : MonoBehaviour
             HttpRequestIo = 0,
             RTCIo = 0
         };
-
+        
         initOptions.OverrideThreadAffinity = overrideThreadAffinity;
-
+        Debug.Log($"initOptions: {initOptions}");
         return PlatformInterface.Initialize(ref initOptions);
     }
 
     public void Awake()
     {
-        InitializePlatformInterface();
-        CreatePlatformInterface();
+        
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+        var result = InitializePlatformInterface();
+        Debug.Log($"EOS Initialize: {result}");
+        if (result != Result.Success)
+        {
+            Debug.LogError($"EOS failed to initialize: {result}");
+            return;
+        }
+    
+        s_eosPlatformInterface = CreatePlatformInterface();
+
+        if (s_eosPlatformInterface == null)
+        {
+            Debug.LogError("EOS Platform creation failed.");
+            return;
+        }
+
+        Debug.Log("EOS Platform created.");        
     }
 
     public void Update()
     {
-        if (GetEOSPlatformInterface() != null) 
-        {
-            s_eosPlatformInterface.Tick();
-        }
+        s_eosPlatformInterface?.Tick();    
     }
 
     private void OnApplicationQuit()
     {
         s_eosPlatformInterface?.Release();
-        
         return;
     }
     private PlatformInterface CreatePlatformInterface()
@@ -86,8 +95,8 @@ class EOSSDKManager : MonoBehaviour
 
         var clientCredentials = new Epic.OnlineServices.Platform.ClientCredentials
         {
-            ClientId = "xyza7891eoyT5X50GzpCEPe33aoFwjiZ",
-            ClientSecret = "FJ778IE2OSW7/xTfoUEKSUtqIvynytcBELk9IMl+uig"
+            ClientId = "",
+            ClientSecret = ""
         };
         platformOptions.ClientCredentials = clientCredentials;
 
