@@ -158,6 +158,7 @@ namespace Epic.OnlineServices.Platform
 			var optionsInternal = default(InitializeOptionsInternal);
 			optionsInternal.Set(ref options);
 
+			///Added to debug
             Debug.Log(Bindings.EOS_Initialize == null ? "EOS_Initialize delegate is NULL" : "EOS_Initialize loaded");
             var callResult = Bindings.EOS_Initialize(ref optionsInternal);
 

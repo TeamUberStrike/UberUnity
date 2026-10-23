@@ -8,7 +8,7 @@ public class EOSSDKManager : MonoBehaviour
     private static PlatformInterface s_eosPlatformInterface;
 
     private static EOSSDKManager instance;
-    public PlatformInterface GetEOSPlatformInterface()
+    public static PlatformInterface GetEOSPlatformInterface()
     {
         return s_eosPlatformInterface;
     }
@@ -18,25 +18,23 @@ public class EOSSDKManager : MonoBehaviour
         {
             ProductName = "UberUnityClient",
             ProductVersion = "1.0",
-
-            //AllocateMemoryFunction = IntPtr.Zero,
-            //ReallocateMemoryFunction = IntPtr.Zero,
-            //ReleaseMemoryFunction = IntPtr.Zero
+            OverrideThreadAffinity = new InitializeThreadAffinity
+            {
+                NetworkWork = 0,
+                StorageIo = 0,
+                WebSocketIo = 0,
+                P2PIo = 0,
+                HttpRequestIo = 0,
+                RTCIo = 0
+            }
         };
 
-        var overrideThreadAffinity = new InitializeThreadAffinity
-        {
-            NetworkWork = 0,
-            StorageIo = 0,
-            WebSocketIo = 0,
-            P2PIo = 0,
-            HttpRequestIo = 0,
-            RTCIo = 0
-        };
-        
-        initOptions.OverrideThreadAffinity = overrideThreadAffinity;
         Debug.Log($"initOptions: {initOptions}");
-        return PlatformInterface.Initialize(ref initOptions);
+
+        var result = PlatformInterface.Initialize(ref initOptions);
+
+        Debug.Log($"result: {result}");
+        return result;
     }
 
     public void Awake()
@@ -57,7 +55,7 @@ public class EOSSDKManager : MonoBehaviour
             return;
         }
     
-        s_eosPlatformInterface = CreatePlatformInterface();
+        CreatePlatformInterface();
 
         if (s_eosPlatformInterface == null)
         {
@@ -76,37 +74,36 @@ public class EOSSDKManager : MonoBehaviour
     private void OnApplicationQuit()
     {
         s_eosPlatformInterface?.Release();
+        s_eosPlatformInterface = null;
         return;
     }
-    private PlatformInterface CreatePlatformInterface()
+    public void CreatePlatformInterface()
     {
-        var platformOptions = new Epic.OnlineServices.Platform.WindowsOptions();
-        platformOptions.CacheDirectory = Application.temporaryCachePath;
-        platformOptions.IsServer = false;
-
-        platformOptions.EncryptionKey = null;
-        platformOptions.OverrideCountryCode = null;
-        platformOptions.OverrideLocaleCode = null;
-        platformOptions.ProductId = "9dd583a08ed840369e551e42fba24e0c";
-        platformOptions.SandboxId = "f5bb034d4b08458bb0d790b0164d05be";
-        platformOptions.DeploymentId = "1404b10b7b004f0a927ad623464017e7";
-
-        platformOptions.TickBudgetInMilliseconds = 0;
-
-        var clientCredentials = new Epic.OnlineServices.Platform.ClientCredentials
+        var options = new WindowsOptions()
         {
-            ClientId = "",
-            ClientSecret = ""
+            ProductId = "9dd583a08ed840369e551e42fba24e0c",
+            SandboxId = "f5bb034d4b08458bb0d790b0164d05be",
+            ClientCredentials = new ClientCredentials()
+            {
+                ClientId = "xyza78910Rgra1tsBytv30D9yKUSyxfH",
+                ClientSecret = "9CyhuxRdp+4lRgDkEE9U6r9YwppkFhS0YXLEkJqvxv0",
+            },
+            DeploymentId = "1404b10b7b004f0a927ad623464017e7",
+            EncryptionKey = null,
+            Flags = PlatformFlags.DisableOverlay,
+            IsServer = false,
         };
-        platformOptions.ClientCredentials = clientCredentials;
+        s_eosPlatformInterface = PlatformInterface.Create(ref options);
 
-        platformOptions.Flags =
-        #if UNITY_EDITOR
-            PlatformFlags.LoadingInEditor;
-        #else
-            PlatformFlags.None;
-        #endif
-        return Epic.OnlineServices.Platform.PlatformInterface.Create(ref platformOptions);
+        if (s_eosPlatformInterface != null)
+        {
+            Debug.Log("PlatformInterface::CreatePlatformInstace has created successfully.");
+        }
+        else
+        {
+            Debug.LogError("PlatformInterface::CreatePlatformInstace creation has failed.");
+            return;
+        }
     }
 }
 
