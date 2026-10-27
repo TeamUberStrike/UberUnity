@@ -1,10 +1,41 @@
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using UnityEngine;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Platform;
-using System;
-using UnityEngine;
+
 
 public class EOSSDKManager : MonoBehaviour
 {
+    [DllImport("Kernel32.dll")] 
+    static extern IntPtr LoadLibrary(string fileName);
+
+    [DllImport("Kernel32.dll")] 
+    static extern IntPtr GetProcAddress(IntPtr module, string procName);
+
+    [DllImport("Kernel32.dll")] 
+    static extern int FreeLibrary(IntPtr module);
+
+    private static IntPtr eosLib = IntPtr.Zero;
+
+    private static void LoadEOSBindings()
+    {
+        string dllPath = Path.Combine(
+            Application.dataPath,
+            "Plugins",
+            "x86_64",
+            "EOSSDK-Win64-Shipping.dll"
+        );
+        eosLib = LoadLibrary(dllPath);
+        if (eosLib == IntPtr.Zero) 
+        {
+            throw new Exception("Failed to load the EOS SDK DLL");
+        } 
+        Bindings.Hook(eosLib, GetProcAddress);
+        WindowsBindings.Hook(eosLib, GetProcAddress);
+    }
+    
     private static PlatformInterface s_eosPlatformInterface;
 
     private static EOSSDKManager instance;
@@ -12,9 +43,9 @@ public class EOSSDKManager : MonoBehaviour
     {
         return s_eosPlatformInterface;
     }
-    private Epic.OnlineServices.Result InitializePlatformInterface()
+    private Result InitializePlatformInterface()
     {
-        InitializeOptions initOptions = new InitializeOptions
+        InitializeOptions initOptions = new()
         {
             ProductName = "UberUnityClient",
             ProductVersion = "1.0",
@@ -29,11 +60,8 @@ public class EOSSDKManager : MonoBehaviour
             }
         };
 
-        Debug.Log($"initOptions: {initOptions}");
-
         var result = PlatformInterface.Initialize(ref initOptions);
 
-        Debug.Log($"result: {result}");
         return result;
     }
 
@@ -47,8 +75,10 @@ public class EOSSDKManager : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(gameObject);
+
+        LoadEOSBindings();
         var result = InitializePlatformInterface();
-        Debug.Log($"EOS Initialize: {result}");
+
         if (result != Result.Success)
         {
             Debug.LogError($"EOS failed to initialize: {result}");

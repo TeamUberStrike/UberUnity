@@ -37,7 +37,7 @@ namespace Epic.OnlineServices.Platform
 		{
 			var optionsInternal = default(WindowsOptionsInternal);
 			optionsInternal.Set(ref options);
-
+            
 			var callResult = WindowsBindings.EOS_Platform_Create_Windows(ref optionsInternal);
 
 			Helper.Dispose(ref optionsInternal);
